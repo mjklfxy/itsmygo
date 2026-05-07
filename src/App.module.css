@@ -1,0 +1,240 @@
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 20px;
+  overflow: hidden;
+}
+
+.title {
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #a0785a;
+  margin: 0 0 12px;
+  letter-spacing: 3px;
+  flex-shrink: 0;
+}
+
+.gameArea {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  width: 100%;
+}
+
+.boardWrapper {
+  flex: 1;
+  max-width: min(calc(100vh - 100px), calc(100vw - 280px));
+  aspect-ratio: 1;
+  padding: 12px;
+  background: linear-gradient(145deg, #f0dcc8, #e8d0b8);
+  border-radius: 14px;
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.finalScore {
+  margin-top: 12px;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #8b6f5e;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 8px 20px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Menu ── */
+.menu {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.menuTitle {
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 64px;
+  font-weight: 900;
+  color: #8b6858;
+  margin: 0;
+  letter-spacing: 12px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.menuSub {
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 14px;
+  color: #b0a090;
+  margin: 0 0 32px;
+  letter-spacing: 4px;
+  font-weight: 600;
+}
+
+.menuButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.menuBtn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 24px;
+  border: 2px solid #e0d4c8;
+  border-radius: 14px;
+  background: white;
+  color: #7a6050;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.menuBtn:hover {
+  border-color: #c0a888;
+  background: #faf5ef;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.menuBtnIcon {
+  font-size: 24px;
+  width: 32px;
+  text-align: center;
+}
+
+/* Config panel */
+.config, .historyPanel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: white;
+  border-radius: 14px;
+  padding: 24px;
+  border: 1px solid #e8dcd0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+}
+
+.configTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: #8b6858;
+  text-align: center;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+}
+
+.configGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.configLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: #a09080;
+}
+
+.configOptions {
+  display: flex;
+  gap: 8px;
+}
+
+.configOpt {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #e0d4c8;
+  border-radius: 10px;
+  background: white;
+  color: #8b7060;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.configOpt:hover {
+  border-color: #c0a888;
+}
+
+.configOptActive {
+  background: linear-gradient(135deg, #d4a888, #c09070);
+  color: white;
+  border-color: transparent;
+}
+
+.configButtons {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.configStart {
+  flex: 2;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #d4a888, #c08868);
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(192,136,104,0.2);
+}
+
+.configStart:hover { transform: translateY(-1px); }
+
+.configCancel {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid #e0d4c8;
+  border-radius: 10px;
+  background: white;
+  color: #8b7060;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.configCancel:hover { border-color: #c0a888; }
+
+/* History */
+.historyList { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; }
+.historyEmpty { text-align: center; color: #b0a090; font-size: 13px; padding: 16px; }
+.historyItem {
+  padding: 10px 12px; background: #faf5ef; border-radius: 8px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.historyInfo { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #8b7060; }
+.historyResult { font-weight: 700; color: #c07850; }
+.historyDel {
+  background: none; border: none; color: #c09080; font-size: 12px; cursor: pointer;
+  font-family: inherit; font-weight: 600; padding: 0;
+}
+.historyDel:hover { color: #a05040; }
