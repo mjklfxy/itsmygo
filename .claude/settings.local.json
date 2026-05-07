@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(npx vite *)",
+      "WebFetch(domain:www.deepmind.com)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "Bash(npx tsc *)"
+    ]
+  }
+}
