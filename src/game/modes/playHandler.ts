@@ -18,7 +18,7 @@ export function handlePlaceStone(
   if (state.currentPlayer === 1) newCaptures.black += result.captured;
   else newCaptures.white += result.captured;
 
-  const move: Move = { x, y, player: state.currentPlayer };
+  const move: Move = { x, y, player: state.currentPlayer, captured: result.captured };
 
   return {
     ...state,
@@ -35,7 +35,6 @@ export function handlePlaceStone(
 export function handleUndo(state: GameState): GameState {
   if (state.history.length === 0) return state;
 
-  const emptyBefore = state.board.flat().filter((s) => s === 0).length;
   const lastUndo =
     state.moves.length > 0 ? state.moves[state.moves.length - 1] : null;
 
@@ -52,9 +51,11 @@ export function handleUndo(state: GameState): GameState {
       i >= Math.max(0, state.moves.length - 2);
       i--
     ) {
-      if (!state.moves[i].pass) {
-        if (state.moves[i].player === 1) newCaptures.black--;
-        else newCaptures.white--;
+      const move = state.moves[i];
+      if (!move.pass) {
+        const captured = move.captured ?? 0;
+        if (move.player === 1) newCaptures.black -= captured;
+        else newCaptures.white -= captured;
       }
     }
 
@@ -74,14 +75,9 @@ export function handleUndo(state: GameState): GameState {
 
   // single undo: play (no AI) or AI mode with insufficient history
   const newHistory = state.history.slice(0, -1);
-  const emptyAfter =
-    newHistory.length > 0
-      ? newHistory[newHistory.length - 1].flat().filter((s) => s === 0).length
-      : emptyBefore;
-  const captured = emptyAfter - emptyBefore;
-
   const newCaptures = { ...state.captures };
   if (lastUndo && !lastUndo.pass) {
+    const captured = lastUndo.captured ?? 0;
     if (lastUndo.player === 1) newCaptures.black -= captured;
     else newCaptures.white -= captured;
   }
@@ -102,7 +98,7 @@ export function handleUndo(state: GameState): GameState {
 
 export function handlePass(state: GameState): GameState {
   if (state.gameOver || state.countingMode !== "none") return state;
-  const move: Move = { x: -1, y: -1, player: state.currentPlayer, pass: true };
+  const move: Move = { x: -1, y: -1, player: state.currentPlayer, pass: true, captured: 0 };
   const newPasses = state.consecutivePasses + 1;
   if (newPasses >= 2) {
     const scores = score(state.board, state.captures, state.komi);
