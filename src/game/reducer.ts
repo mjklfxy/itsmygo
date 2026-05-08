@@ -70,6 +70,7 @@ function replayMoves(state: GameState, moves: Move[]): GameState {
       const prevBoard = s.history.length > 0 ? s.history[s.history.length - 1] : null
       const result = placeStone(s.board, move.x, move.y, move.player, prevBoard)
       if (!result) continue
+      const replayedMove = { ...move, captured: result.captured }
       s = {
         ...s,
         board: result.board,
@@ -80,7 +81,7 @@ function replayMoves(state: GameState, moves: Move[]): GameState {
         currentPlayer: (-s.currentPlayer) as Player,
         lastMove: [move.x, move.y] as [number, number],
         consecutivePasses: 0,
-        moves: [...s.moves, move],
+        moves: [...s.moves, replayedMove],
         history: [...s.history, s.board],
       }
     }

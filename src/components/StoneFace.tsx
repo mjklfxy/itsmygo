@@ -1,21 +1,5 @@
 import styles from './StoneFace.module.css'
-
-export type Expression = 'happy' | 'neutral' | 'worried' | 'scared' | 'surprised'
-
-export const FACES: Record<Expression, string> = {
-  happy: '♥‿♥',
-  neutral: '－_－',
-  worried: '>_<',
-  scared: 'T_T',
-  surprised: 'O_O',
-}
-
-export function getExpression(liberties: number): Expression {
-  if (liberties >= 4) return 'happy'
-  if (liberties >= 3) return 'neutral'
-  if (liberties >= 2) return 'worried'
-  return 'scared'
-}
+import { FACES, type Expression } from './stoneFaceExpressions'
 
 export function StoneFace({ expression, stoneColor, r }: { expression: Expression; stoneColor: number; r: number }) {
   const isB = stoneColor === 1

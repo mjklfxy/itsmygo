@@ -1,7 +1,8 @@
-import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
+import { useMemo, useState, useEffect, useRef } from 'react'
 import { findGroup } from '../game/logic'
-import { useGameContext } from '../context/GameContext'
-import { StoneFace, type Expression, getExpression } from './StoneFace'
+import { useGameContext } from '../hooks/useGameContext'
+import { StoneFace } from './StoneFace'
+import { getExpression } from './stoneFaceExpressions'
 import { GoldenBurst } from './GoldenBurst'
 import { TerritoryOverlay } from './TerritoryOverlay'
 import styles from './GoBoard.module.css'
@@ -29,34 +30,9 @@ export default function GoBoard() {
   const [hover, setHover] = useState<[number, number] | null>(null)
   const [burstPos, setBurstPos] = useState<[number, number] | null>(null)
   const prevMoveRef = useRef(lastMove)
-  const prevBoardRef = useRef(board)
-  // Track when each stone was placed (for surprise expression)
-  const stoneAgeRef = useRef<Map<string, number>>(new Map())
-  // Track previous expression per stone to smooth transitions
-  const prevExprRef = useRef<Map<string, Expression>>(new Map())
-
-  // Clean up expression tracking when board identity changes (e.g., exit try mode)
-  useEffect(() => {
-    if (prevBoardRef.current !== board) {
-      // Remove tracking for positions that no longer have a stone or have a different stone
-      for (const [key] of prevExprRef.current) {
-        const [x, y] = key.split(',').map(Number)
-        if (key.includes('_')) continue // skip pending keys
-        if (x >= size || y >= size || board[y]?.[x] === 0) {
-          prevExprRef.current.delete(key)
-          stoneAgeRef.current.delete(key)
-        }
-      }
-      prevBoardRef.current = board
-    }
-  }, [board, size])
-
   useEffect(() => {
     if (lastMove && (prevMoveRef.current?.[0] !== lastMove[0] || prevMoveRef.current?.[1] !== lastMove[1])) {
       setBurstPos(lastMove)
-      const key = `${lastMove[0]},${lastMove[1]}`
-      stoneAgeRef.current.set(key, Date.now())
-      prevExprRef.current.delete(key) // reset expression tracking for moved stone
       const t = setTimeout(() => setBurstPos(null), 800)
       prevMoveRef.current = lastMove
       return () => clearTimeout(t)
@@ -80,50 +56,6 @@ export default function GoBoard() {
   const sr = cellSize * 0.47
   const starPoints = useMemo(() => getStarPoints(size), [size])
   const toP = (i: number) => PADDING + i * cellSize
-
-  // Get expression with smoothing: surprise takes priority for 1s, then stable transitions
-  const getSmoothExpr = useCallback((x: number, y: number, libs: number): Expression => {
-    const key = `${x},${y}`
-    const now = Date.now()
-    const age = stoneAgeRef.current.get(key)
-
-    // Newly placed stone → surprised for 800ms
-    if (age && now - age < 800) return 'surprised'
-
-    const target = getExpression(libs)
-    const prev = prevExprRef.current.get(key)
-
-    // No previous expression, just set it
-    if (!prev) {
-      prevExprRef.current.set(key, target)
-      return target
-    }
-
-    // Same expression, keep it
-    if (prev === target) return prev
-
-    // Scared is always urgent, switch immediately
-    if (target === 'scared') {
-      prevExprRef.current.set(key, target)
-      return target
-    }
-
-    // For non-scared transitions, require 2 consecutive reads at new level
-    // This is a simple debounce: only switch if it's been stable
-    // We store the "pending" expression and only commit on next render if it matches
-    const pendingKey = key + '_pending'
-    const pending = prevExprRef.current.get(pendingKey as any)
-    if (pending === target) {
-      // Two in a row, commit the change
-      prevExprRef.current.delete(pendingKey as any)
-      prevExprRef.current.set(key, target)
-      return target
-    } else {
-      // First render at new level, store as pending
-      prevExprRef.current.set(pendingKey as any, target)
-      return prev // keep old expression for one more render
-    }
-  }, [])
 
   return (
     <svg className={styles.board} viewBox={`0 0 ${boardPx} ${boardPx}`}>
@@ -177,7 +109,7 @@ export default function GoBoard() {
         const key = `${x},${y}`
         const libs = libertyMap.get(key) ?? 2
         const isBurst = burstPos && burstPos[0] === x && burstPos[1] === y
-        const expr = isBurst ? 'surprised' : getSmoothExpr(x, y, libs)
+        const expr = isBurst ? 'surprised' : getExpression(libs)
         const sx = toP(x), sy = toP(y)
         return (
           <g key={`st${key}`}>

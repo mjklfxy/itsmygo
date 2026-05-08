@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { score } from '../game/logic'
 import { evaluate } from '../game/evaluate'
 import { loadRecords, deleteRecord } from '../game/sgf'
-import { useGameContext } from '../context/GameContext'
+import { useGameContext } from '../hooks/useGameContext'
 import { useGamePersistence } from '../hooks/useGamePersistence'
 import styles from './GamePanel.module.css'
 

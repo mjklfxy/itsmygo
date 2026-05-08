@@ -7,6 +7,7 @@ export interface Move {
   y: number
   player: Player
   pass?: boolean
+  captured?: number
 }
 
 export interface GameRecord {

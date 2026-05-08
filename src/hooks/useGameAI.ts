@@ -6,7 +6,10 @@ import { selectMove } from '../game/ai'
 export function useGameAI(state: GameState, dispatch: React.Dispatch<GameAction>) {
   const aiThinking = useRef(false)
   const stateRef = useRef(state)
-  stateRef.current = state
+
+  useEffect(() => {
+    stateRef.current = state
+  }, [state])
 
   useEffect(() => {
     if (state.mode !== 'play' || state.gameOver || state.aiMode === 'none') return
