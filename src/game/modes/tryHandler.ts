@@ -33,10 +33,13 @@ export function handleEnterTry(state: GameState): GameState {
   return {
     ...state,
     mode: 'try',
+    savedMode: state.mode as 'play' | 'review',
     savedBoard: state.board,
     savedPlayer: state.currentPlayer,
     savedHistory: state.history,
     savedReviewIndex: state.reviewIndex,
+    savedGameOver: state.gameOver,
+    savedWinner: state.winner,
     history: [],
     gameOver: false,
     winner: null,
@@ -45,12 +48,15 @@ export function handleEnterTry(state: GameState): GameState {
 
 export function handleExitTry(state: GameState): GameState {
   if (!state.savedBoard || !state.savedHistory) return state
+  const targetMode = state.savedMode || 'review'
   return {
     ...state,
-    mode: 'review',
+    mode: targetMode,
     board: state.savedBoard,
     currentPlayer: state.savedPlayer,
     history: state.savedHistory,
     reviewIndex: state.savedReviewIndex,
+    gameOver: state.savedGameOver,
+    winner: state.savedWinner,
   }
 }

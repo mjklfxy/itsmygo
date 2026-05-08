@@ -1,3 +1,5 @@
+import styles from './StoneFace.module.css'
+
 export type Expression = 'happy' | 'neutral' | 'worried' | 'scared' | 'surprised'
 
 export const FACES: Record<Expression, string> = {
@@ -46,18 +48,12 @@ export function StoneFace({ expression, stoneColor, r }: { expression: Expressio
       )}
       {expression === 'scared' && (
         <>
-          <ellipse cx={-r * 0.22} cy={r * 0.22} rx={r * 0.035} ry={r * 0.05} fill="rgba(60,160,255,0.7)">
-            <animate attributeName="cy" dur="1s" repeatCount="indefinite"
-              values={`${r * 0.22};${r * 0.38};${r * 0.22}`} />
-            <animate attributeName="opacity" dur="1s" repeatCount="indefinite"
-              values="0.7;0;0.7" />
-          </ellipse>
-          <ellipse cx={r * 0.22} cy={r * 0.26} rx={r * 0.035} ry={r * 0.05} fill="rgba(60,160,255,0.6)">
-            <animate attributeName="cy" dur="1.1s" repeatCount="indefinite"
-              values={`${r * 0.26};${r * 0.42};${r * 0.26}`} />
-            <animate attributeName="opacity" dur="1.1s" repeatCount="indefinite"
-              values="0.6;0;0.6" />
-          </ellipse>
+          <ellipse cx={-r * 0.22} cy={r * 0.22} rx={r * 0.035} ry={r * 0.05}
+            fill="rgba(60,160,255,0.7)" className={styles.tear}
+            style={{ animationDelay: '0s' } as React.CSSProperties} />
+          <ellipse cx={r * 0.22} cy={r * 0.26} rx={r * 0.035} ry={r * 0.05}
+            fill="rgba(60,160,255,0.6)" className={styles.tear}
+            style={{ animationDelay: '0.3s' } as React.CSSProperties} />
         </>
       )}
     </g>

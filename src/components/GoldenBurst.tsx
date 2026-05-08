@@ -1,95 +1,133 @@
-import { useMemo } from 'react'
+import { useRef, useLayoutEffect, useMemo } from 'react'
+import gsap from 'gsap'
 
 export function GoldenBurst({ cx, cy, r }: { cx: number; cy: number; r: number }) {
-  const items = useMemo(() => {
+  const groupRef = useRef<SVGGElement>(null)
+
+  const sparks = useMemo(() => {
     let seed = Math.round(cx * 137 + cy * 311)
     const rand = () => { seed = (seed * 16807 + 0) % 2147483647; return (seed & 0x7fffffff) / 2147483647 }
 
-    const result: { x: number; y: number; ex: number; ey: number; size: number; delay: number; dur: number; shape: number }[] = []
+    const colors = ['#FFD700', '#FFF3B0', '#FFAA00']
 
-    for (let i = 0; i < 30; i++) {
+    return Array.from({ length: 25 }, () => {
       const angle = rand() * Math.PI * 2
-      const distStart = r * 1.05 + rand() * r * 0.1
-      const distEnd = r * 1.4 + rand() * r * 0.6
-      result.push({
-        x: cx + Math.cos(angle) * distStart,
-        y: cy + Math.sin(angle) * distStart,
-        ex: cx + Math.cos(angle) * distEnd,
-        ey: cy + Math.sin(angle) * distEnd,
-        size: r * 0.06 + rand() * r * 0.1,
-        delay: rand() * 0.15,
-        dur: 0.4 + rand() * 0.3,
+      const edgeR = r * (0.9 + rand() * 0.12)
+      const speed = r * (2.5 + rand() * 3.5)
+      const size = r * 0.04 + rand() * r * 0.12
+      return {
+        sx: Math.cos(angle) * edgeR,
+        sy: Math.sin(angle) * edgeR,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - r * 1.5,
+        gravity: r * (10 + rand() * 8),
+        size,
         shape: Math.floor(rand() * 5),
-      })
-    }
-    return result
+        color: colors[Math.floor(rand() * 3)],
+        duration: 0.4 + rand() * 0.25,
+      }
+    })
   }, [cx, cy, r])
 
-  const gold = '#FFD700'
-  const goldL = '#FFF3B0'
-  const goldB = '#FFAA00'
+  useLayoutEffect(() => {
+    if (!groupRef.current) return
+    const root = groupRef.current
+    const tl = gsap.timeline()
+
+    // Flash + ring — only GSAP part, lightweight
+    const flash = root.querySelector('.flash')
+    if (flash) {
+      tl.fromTo(flash,
+        { attr: { r: r * 0.2 }, opacity: 1 },
+        { attr: { r: r * 1.5 }, opacity: 0, duration: 0.5, ease: 'power3.out' },
+        0
+      )
+    }
+    const ring = root.querySelector('.ring-flash')
+    if (ring) {
+      tl.fromTo(ring,
+        { attr: { r: r * 0.8, 'stroke-width': 3 }, opacity: 0.8 },
+        { attr: { r: r * 2.0, 'stroke-width': 0 }, opacity: 0, duration: 0.35, ease: 'power2.out' },
+        0
+      )
+    }
+
+    // Sparks — pure RAF parabolic physics, no GSAP
+    const els = root.querySelectorAll('.spark-inner')
+    const n = els.length
+    if (n === 0) return () => { tl.kill() }
+
+    let start: number | null = null
+    let raf = 0
+
+    const tick = (now: number) => {
+      if (!start) start = now
+      const t = (now - start) / 1000
+
+      let allDone = true
+      for (let i = 0; i < n; i++) {
+        const s = sparks[i]
+        const p = Math.min(t / s.duration, 1)
+
+        // Parabolic trajectory: x = vx*t, y = vy*t + 0.5*g*t²
+        const px = s.vx * t
+        const py = s.vy * t + 0.5 * s.gravity * t * t
+
+        // Fade out near end, shrink
+        const alpha = p < 0.6 ? 1 : 1 - (p - 0.6) / 0.4
+        const scale = 1.3 - p * 1.0
+
+        const el = els[i] as SVGElement
+        el.setAttribute('transform', `translate(${px.toFixed(1)}, ${py.toFixed(1)}) scale(${scale.toFixed(2)})`)
+        el.setAttribute('opacity', alpha.toFixed(2))
+
+        if (p < 1) allDone = false
+      }
+
+      if (!allDone) raf = requestAnimationFrame(tick)
+    }
+
+    raf = requestAnimationFrame(tick)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      tl.kill()
+    }
+  }, [cx, cy, r, sparks])
 
   return (
-    <g>
-      <circle cx={cx} cy={cy} r={r * 1.05} fill="none" stroke={gold} strokeWidth="3.5" opacity="1">
-        <animate attributeName="opacity" values="1;0.7;0" dur="0.5s" fill="freeze" />
-        <animate attributeName="stroke-width" values="4;1.5;0" dur="0.5s" fill="freeze" />
-      </circle>
-      <circle cx={cx} cy={cy} r={r * 0.95} fill="none" stroke={goldL} strokeWidth="2" opacity="0.8">
-        <animate attributeName="opacity" values="0.8;0.3;0" dur="0.35s" fill="freeze" />
-      </circle>
+    <g ref={groupRef}>
+      <circle cx={cx} cy={cy} r={r * 0.2} fill="#FFD700" opacity={0} className="flash" />
+      <circle cx={cx} cy={cy} r={r * 0.8} fill="none" stroke="#FFE44D" strokeWidth={3} opacity={0} className="ring-flash" />
 
-      {items.map((sp, i) => (
-        <g key={i}>
-          {sp.shape === 0 && (
-            <path d={`M ${sp.x} ${sp.y - sp.size} L ${sp.x + sp.size*0.5} ${sp.y} L ${sp.x} ${sp.y + sp.size} L ${sp.x - sp.size*0.5} ${sp.y} Z`}
-              fill={gold} stroke={goldL} strokeWidth="0.3">
-              <animate attributeName="opacity" values={`0;1;0.8;0`} begin={`${sp.delay}s`} dur={`${sp.dur}s`} fill="freeze" />
-              <animateTransform attributeName="transform" type="translate"
-                values={`0,0; ${(sp.ex-sp.x)*0.5},${(sp.ey-sp.y)*0.5}; ${sp.ex-sp.x},${sp.ey-sp.y}`}
-                begin={`${sp.delay}s`} dur={`${sp.dur}s`} fill="freeze" />
-              <animateTransform attributeName="transform" type="rotate" additive="sum"
-                values="0;180" begin={`${sp.delay}s`} dur={`${sp.dur}s`} fill="freeze" />
-            </path>
-          )}
-          {sp.shape === 1 && (
-            <text x={sp.x} y={sp.y} fontSize={sp.size * 1.8} fill={goldL} textAnchor="middle" dominantBaseline="central">✦
-              <animate attributeName="opacity" values={`0;1;0.6;0`} begin={`${sp.delay}s`} dur={`${sp.dur}s`} fill="freeze" />
-              <animateTransform attributeName="transform" type="translate"
-                values={`0,0; ${sp.ex-sp.x},${sp.ey-sp.y}`}
-                begin={`${sp.delay}s`} dur={`${sp.dur}s`} fill="freeze" />
-            </text>
-          )}
-          {sp.shape === 2 && (
-            <g>
-              <line x1={sp.x-sp.size} y1={sp.y} x2={sp.x+sp.size} y2={sp.y} stroke={gold} strokeWidth={sp.size*0.35} strokeLinecap="round">
-                <animate attributeName="opacity" values={`0;1;0.5;0`} begin={`${sp.delay}s`} dur={`${sp.dur}s`} fill="freeze" />
-              </line>
-              <line x1={sp.x} y1={sp.y-sp.size} x2={sp.x} y2={sp.y+sp.size} stroke={gold} strokeWidth={sp.size*0.35} strokeLinecap="round">
-                <animate attributeName="opacity" values={`0;1;0.5;0`} begin={`${sp.delay}s`} dur={`${sp.dur}s`} fill="freeze" />
-              </line>
-              <animateTransform attributeName="transform" type="translate"
-                values={`0,0; ${sp.ex-sp.x},${sp.ey-sp.y}`}
-                begin={`${sp.delay}s`} dur={`${sp.dur}s`} fill="freeze" />
-            </g>
-          )}
-          {sp.shape === 3 && (
-            <line x1={sp.x} y1={sp.y-sp.size} x2={sp.x} y2={sp.y+sp.size*0.3}
-              stroke={goldB} strokeWidth={sp.size*0.3} strokeLinecap="round">
-              <animate attributeName="opacity" values={`0;1;0.4;0`} begin={`${sp.delay}s`} dur={`${sp.dur}s`} fill="freeze" />
-              <animateTransform attributeName="transform" type="translate"
-                values={`0,0; ${sp.ex-sp.x},${sp.ey-sp.y}`}
-                begin={`${sp.delay}s`} dur={`${sp.dur}s`} fill="freeze" />
-            </line>
-          )}
-          {sp.shape === 4 && (
-            <circle cx={sp.x} cy={sp.y} r={sp.size * 0.35} fill={goldL} stroke={gold} strokeWidth="0.3">
-              <animate attributeName="opacity" values={`0;1;0.7;0`} begin={`${sp.delay}s`} dur={`${sp.dur}s`} fill="freeze" />
-              <animateTransform attributeName="transform" type="translate"
-                values={`0,0; ${sp.ex-sp.x},${sp.ey-sp.y}`}
-                begin={`${sp.delay}s`} dur={`${sp.dur}s`} fill="freeze" />
-            </circle>
-          )}
+      {sparks.map((s, i) => (
+        <g key={i} transform={`translate(${cx + s.sx}, ${cy + s.sy})`}>
+          <g className="spark-inner">
+            {s.shape === 0 && (
+              <path
+                d={`M 0 ${-s.size} L ${s.size * 0.6} 0 L 0 ${s.size} L ${-s.size * 0.6} 0 Z`}
+                fill={s.color} />
+            )}
+            {s.shape === 1 && (
+              <text fontSize={s.size * 2.5} fill={s.color}
+                textAnchor="middle" dominantBaseline="central">✦</text>
+            )}
+            {s.shape === 2 && (
+              <g>
+                <line x1={-s.size} y1={0} x2={s.size} y2={0}
+                  stroke={s.color} strokeWidth={s.size * 0.3} strokeLinecap="round" />
+                <line x1={0} y1={-s.size} x2={0} y2={s.size}
+                  stroke={s.color} strokeWidth={s.size * 0.3} strokeLinecap="round" />
+              </g>
+            )}
+            {s.shape === 3 && (
+              <circle r={s.size * 0.5} fill={s.color} />
+            )}
+            {s.shape === 4 && (
+              <line x1={0} y1={-s.size} x2={0} y2={s.size * 0.4}
+                stroke={s.color} strokeWidth={s.size * 0.25} strokeLinecap="round" />
+            )}
+          </g>
         </g>
       ))}
     </g>

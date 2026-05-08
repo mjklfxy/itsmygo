@@ -1,5 +1,6 @@
-import type { GameState } from './types'
+import type { GameState, Move, Player } from './types'
 import { createEmptyBoard } from './board'
+import { placeStone } from './logic'
 import * as play from './modes/playHandler'
 import * as review from './modes/reviewHandler'
 import * as tryMode from './modes/tryHandler'
@@ -20,6 +21,7 @@ export type GameAction =
   | { type: 'ACCEPT_COUNT' }
   | { type: 'REJECT_COUNT' }
   | { type: 'CANCEL_COUNT' }
+  | { type: 'LOAD_RECORD'; record: import('./types').GameRecord }
 
 export function createInitialState(size: number, komi: number = 7.5, aiMode: 'none' | 'black' | 'white' = 'none'): GameState {
   return {
@@ -39,6 +41,9 @@ export function createInitialState(size: number, komi: number = 7.5, aiMode: 'no
     savedPlayer: 1,
     savedHistory: [],
     savedReviewIndex: -1,
+    savedMode: 'play',
+    savedGameOver: false,
+    savedWinner: null,
     countingMode: 'none',
     countingTerritory: null,
     countingRequester: null,
@@ -47,6 +52,43 @@ export function createInitialState(size: number, komi: number = 7.5, aiMode: 'no
     countingWhiteScore: 0,
     komi,
     aiMode,
+  }
+}
+
+function replayMoves(state: GameState, moves: Move[]): GameState {
+  let s = state
+  for (const move of moves) {
+    if (move.pass) {
+      s = {
+        ...s,
+        consecutivePasses: s.consecutivePasses + 1,
+        currentPlayer: (-s.currentPlayer) as Player,
+        moves: [...s.moves, move],
+        history: [...s.history, s.board],
+      }
+    } else {
+      const prevBoard = s.history.length > 0 ? s.history[s.history.length - 1] : null
+      const result = placeStone(s.board, move.x, move.y, move.player, prevBoard)
+      if (!result) continue
+      s = {
+        ...s,
+        board: result.board,
+        captures: {
+          black: s.captures.black + (move.player === 1 ? result.captured : 0),
+          white: s.captures.white + (move.player === -1 ? result.captured : 0),
+        },
+        currentPlayer: (-s.currentPlayer) as Player,
+        lastMove: [move.x, move.y] as [number, number],
+        consecutivePasses: 0,
+        moves: [...s.moves, move],
+        history: [...s.history, s.board],
+      }
+    }
+  }
+  return {
+    ...s,
+    mode: 'review',
+    reviewIndex: s.history.length - 1,
   }
 }
 
@@ -91,6 +133,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return play.handleCancelCount(state)
     case 'RESET':
       return createInitialState(action.size, action.komi, action.aiMode)
+    case 'LOAD_RECORD': {
+      const { record } = action
+      const initialState = createInitialState(record.size, record.komi ?? 7.5, 'none')
+      return replayMoves(initialState, record.moves)
+    }
     default:
       return state
   }

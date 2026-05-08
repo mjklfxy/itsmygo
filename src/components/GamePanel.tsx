@@ -12,7 +12,7 @@ interface GamePanelProps {
 
 export default function GamePanel({ onBackToMenu }: GamePanelProps) {
   const { state, dispatch } = useGameContext()
-  const { saveSGF, saveRecord } = useGamePersistence(state)
+  const { saveSGF } = useGamePersistence(state)
   const [showHistory, setShowHistory] = useState(false)
 
   const scores = state.gameOver ? score(state.board, state.captures, state.komi) : null
@@ -159,6 +159,11 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
             <button className={`${styles.btn} ${styles.btnCount}`} onClick={() => dispatch({ type: 'REQUEST_COUNT' })}
               disabled={!isPlaying}>数子</button>
           </div>
+          {state.moves.length > 0 && !state.gameOver && (
+            <div className={styles.buttons}>
+              <button className={`${styles.btn} ${styles.btnTry}`} onClick={() => dispatch({ type: 'ENTER_TRY' })}>摆棋试下</button>
+            </div>
+          )}
         </>
       )}
 
@@ -224,7 +229,6 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
       {state.moves.length > 0 && (
         <div className={styles.buttons}>
           <button className={`${styles.btn} ${styles.btnSave}`} onClick={saveSGF}>保存 SGF</button>
-          <button className={`${styles.btn} ${styles.btnSave}`} onClick={saveRecord}>保存对局</button>
         </div>
       )}
 

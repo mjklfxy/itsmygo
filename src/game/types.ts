@@ -15,6 +15,7 @@ export interface GameRecord {
   date: string
   moves: Move[]
   result: string
+  komi: number
 }
 
 export interface GameState {
@@ -34,6 +35,9 @@ export interface GameState {
   savedPlayer: Player
   savedHistory: Board[]
   savedReviewIndex: number
+  savedMode: 'play' | 'review'
+  savedGameOver: boolean
+  savedWinner: Player | null
   countingMode: 'none' | 'requested'
   countingTerritory: Board | null
   countingRequester: Player | null
