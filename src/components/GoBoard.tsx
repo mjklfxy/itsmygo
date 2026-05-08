@@ -141,6 +141,11 @@ export default function GoBoard() {
         <filter id="ss" x="-20%" y="-10%" width="140%" height="140%">
           <feDropShadow dx="1" dy="2" stdDeviation="1.5" floodOpacity="0.15" />
         </filter>
+        <radialGradient id="goldGlow">
+          <stop offset="0%" stopColor="#FFD700" stopOpacity="0.6" />
+          <stop offset="50%" stopColor="#FFAA00" stopOpacity="0.2" />
+          <stop offset="100%" stopColor="#FF8C00" stopOpacity="0" />
+        </radialGradient>
       </defs>
 
       <rect x={0} y={0} width={boardPx} height={boardPx} rx={10} ry={10} className={styles.boardBg} />
@@ -209,7 +214,7 @@ export default function GoBoard() {
           x={toP(x)-cellSize/2} y={toP(y)-cellSize/2}
           width={cellSize} height={cellSize} fill="transparent"
           style={{ cursor: board[y][x]===0 ? 'pointer' : 'default' }}
-          onClick={() => board[y][x]===0 && dispatch({ type: 'PLACE_STONE', x, y })}
+          onClick={() => dispatch({ type: 'PLACE_STONE', x, y })}
           onMouseEnter={() => setHover([x,y])}
           onMouseLeave={() => setHover(null)} />
       )))}

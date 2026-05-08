@@ -31,6 +31,7 @@ export function useGamePersistence(state: GameState) {
       date: new Date().toLocaleString('zh-CN'),
       moves: [...state.moves],
       result,
+      komi: state.komi,
     })
     alert('对局已保存！')
   }, [state])
