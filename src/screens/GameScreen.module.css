@@ -1,0 +1,47 @@
+.title {
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #a0785a;
+  margin: 0 0 12px;
+  letter-spacing: 3px;
+  flex-shrink: 0;
+}
+
+.gameArea {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  width: 100%;
+}
+
+.boardWrapper {
+  flex: 1;
+  max-width: min(calc(100vh - 100px), calc(100vw - 280px));
+  aspect-ratio: 1;
+  padding: 12px;
+  background: linear-gradient(145deg, #f0dcc8, #e8d0b8);
+  border-radius: 14px;
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.finalScore {
+  margin-top: 12px;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #8b6f5e;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 8px 20px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
