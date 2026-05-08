@@ -1,17 +1,30 @@
+import { useEffect } from 'react'
+import type { GameRecord } from '../game/types'
 import GoBoard from '../components/GoBoard'
 import GamePanel from '../components/GamePanel'
 import { useGameContext } from '../context/GameContext'
 import { useGameAI } from '../hooks/useGameAI'
+import { useGameAutoSave } from '../hooks/useGameAutoSave'
 import { score } from '../game/logic'
 import styles from './GameScreen.module.css'
 
 interface GameScreenProps {
   onBackToMenu: () => void
+  pendingRecord?: GameRecord | null
+  onRecordLoaded?: () => void
 }
 
-export default function GameScreen({ onBackToMenu }: GameScreenProps) {
+export default function GameScreen({ onBackToMenu, pendingRecord, onRecordLoaded }: GameScreenProps) {
   const { state, dispatch } = useGameContext()
   useGameAI(state, dispatch)
+  useGameAutoSave(state)
+
+  useEffect(() => {
+    if (pendingRecord) {
+      dispatch({ type: 'LOAD_RECORD', record: pendingRecord })
+      onRecordLoaded?.()
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const scores = state.gameOver ? score(state.board, state.captures, state.komi) : null
 
