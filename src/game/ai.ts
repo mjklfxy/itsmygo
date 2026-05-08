@@ -1,14 +1,6 @@
 import type { Board, Player, Stone } from './types'
+import { getNeighbors } from './board'
 import { placeStone, findGroup } from './logic'
-
-function getNeighbors(x: number, y: number, size: number): [number, number][] {
-  const r: [number, number][] = []
-  if (x > 0) r.push([x - 1, y])
-  if (x < size - 1) r.push([x + 1, y])
-  if (y > 0) r.push([x, y - 1])
-  if (y < size - 1) r.push([x, y + 1])
-  return r
-}
 
 function countStones(board: Board): number {
   let n = 0

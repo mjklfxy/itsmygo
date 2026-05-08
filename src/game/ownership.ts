@@ -7,6 +7,7 @@
  */
 
 import type { Board, Stone } from './types'
+import { getNeighbors } from './board'
 import { findGroup } from './logic'
 
 // ────────────────────────────────────────────
@@ -33,23 +34,6 @@ export interface OwnershipResult {
   /** Final scores */
   blackScore: number
   whiteScore: number
-}
-
-// ────────────────────────────────────────────
-// Helpers
-// ────────────────────────────────────────────
-
-function cloneBoard(board: Board): Board {
-  return board.map(row => [...row])
-}
-
-function getNeighbors(x: number, y: number, size: number): [number, number][] {
-  const r: [number, number][] = []
-  if (x > 0) r.push([x - 1, y])
-  if (x < size - 1) r.push([x + 1, y])
-  if (y > 0) r.push([x, y - 1])
-  if (y < size - 1) r.push([x, y + 1])
-  return r
 }
 
 // ────────────────────────────────────────────

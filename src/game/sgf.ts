@@ -2,8 +2,8 @@ import type { Move, GameRecord } from './types'
 
 const COORD = 'abcdefghijklmnopqrstuvwxyz'
 
-export function movesToSGF(moves: Move[], size: number, result?: string): string {
-  let sgf = `(;GM[1]FF[4]CA[UTF-8]SZ[${size}]KM[6.5]`
+export function movesToSGF(moves: Move[], size: number, result?: string, komi: number = 7.5): string {
+  let sgf = `(;GM[1]FF[4]CA[UTF-8]SZ[${size}]KM[${komi}]`
   if (result) sgf += `RE[${result}]`
 
   for (const m of moves) {

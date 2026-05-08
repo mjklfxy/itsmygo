@@ -43,7 +43,3 @@ export interface GameState {
   komi: number
   aiMode: 'none' | 'black' | 'white'
 }
-
-export function createEmptyBoard(size: number): Board {
-  return Array.from({ length: size }, () => Array(size).fill(0))
-}
