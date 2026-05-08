@@ -5,26 +5,30 @@ export function GoldenBurst({ cx, cy, r }: { cx: number; cy: number; r: number }
   const groupRef = useRef<SVGGElement>(null)
 
   const sparks = useMemo(() => {
-    let seed = Math.round(cx * 137 + cy * 311)
-    const rand = () => { seed = (seed * 16807 + 0) % 2147483647; return (seed & 0x7fffffff) / 2147483647 }
+    const seed = Math.round(cx * 137 + cy * 311)
+    const rand = (step: number) => {
+      const x = Math.sin(seed + step * 12.9898) * 43758.5453
+      return x - Math.floor(x)
+    }
 
     const colors = ['#FFD700', '#FFF3B0', '#FFAA00']
 
-    return Array.from({ length: 25 }, () => {
-      const angle = rand() * Math.PI * 2
-      const edgeR = r * (0.9 + rand() * 0.12)
-      const speed = r * (2.5 + rand() * 3.5)
-      const size = r * 0.04 + rand() * r * 0.12
+    return Array.from({ length: 25 }, (_, i) => {
+      const offset = i * 8
+      const angle = rand(offset) * Math.PI * 2
+      const edgeR = r * (0.9 + rand(offset + 1) * 0.12)
+      const speed = r * (2.5 + rand(offset + 2) * 3.5)
+      const size = r * 0.04 + rand(offset + 3) * r * 0.12
       return {
         sx: Math.cos(angle) * edgeR,
         sy: Math.sin(angle) * edgeR,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed - r * 1.5,
-        gravity: r * (10 + rand() * 8),
+        gravity: r * (10 + rand(offset + 4) * 8),
         size,
-        shape: Math.floor(rand() * 5),
-        color: colors[Math.floor(rand() * 3)],
-        duration: 0.4 + rand() * 0.25,
+        shape: Math.floor(rand(offset + 5) * 5),
+        color: colors[Math.floor(rand(offset + 6) * 3)],
+        duration: 0.4 + rand(offset + 7) * 0.25,
       }
     })
   }, [cx, cy, r])

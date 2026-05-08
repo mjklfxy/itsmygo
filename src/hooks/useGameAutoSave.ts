@@ -28,5 +28,13 @@ export function useGameAutoSave(state: GameState) {
         komi: state.komi,
       })
     }
-  }, [state.gameOver])
+  }, [
+    state.board,
+    state.captures,
+    state.gameOver,
+    state.komi,
+    state.moves,
+    state.size,
+    state.winner,
+  ])
 }
