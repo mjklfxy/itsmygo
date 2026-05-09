@@ -32,11 +32,14 @@ export function createInitialState(size: number, komi: number = 7.5, aiMode: 'no
     captures: { black: 0, white: 0 },
     consecutivePasses: 0,
     gameOver: false,
+    gameEndReason: null,
+    gameResult: null,
     winner: null,
     lastMove: null,
     moves: [],
     mode: 'play',
     reviewIndex: -1,
+    reviewFinalBoard: null,
     savedBoard: null,
     savedPlayer: 1,
     savedHistory: [],
@@ -89,7 +92,8 @@ function replayMoves(state: GameState, moves: Move[]): GameState {
   return {
     ...s,
     mode: 'review',
-    reviewIndex: s.history.length - 1,
+    reviewIndex: s.moves.length,
+    reviewFinalBoard: s.board,
   }
 }
 

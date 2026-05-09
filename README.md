@@ -40,18 +40,36 @@ npm run dev
 
 ```
 src/
-├── main.tsx              # React 入口
-├── App.tsx               # 根组件（菜单 + 对局界面）
+├── main.tsx              # Vite HTML 入口转发
+├── app/
+│   ├── main.tsx          # React 挂载入口
+│   ├── App.tsx           # 根组件（菜单 + 对局界面）
+│   └── App.module.css
+├── styles/
+│   └── global.css        # 全局样式
+├── screens/
+│   ├── MenuScreen.tsx    # 主菜单、配置、历史载入
+│   └── GameScreen.tsx    # 对局页面布局
 ├── components/
-│   ├── GoBoard.tsx       # SVG 棋盘渲染（棋子、动画、领地覆盖层）
-│   └── GamePanel.tsx     # 侧边面板（控制、评估、对局历史）
-└── game/
+│   ├── board/            # SVG 棋盘、棋子表情、落子动画、领地覆盖层
+│   └── panel/            # 侧边面板（控制、评估、对局历史）
+├── context/              # React Context Provider 和 context value
+├── hooks/                # UI 与 game/services 的连接层
+├── services/
+│   ├── gameRecords.ts    # localStorage 存档管理
+│   └── sgfDownload.ts    # 浏览器文件下载
+└── game/                 # 围棋领域层，不依赖 React/DOM/localStorage
     ├── types.ts          # 核心类型定义
-    ├── logic.ts          # 纯函数规则引擎（落子、提子、计分、形势判断）
-    ├── reducer.ts        # useReducer 状态机（14 种 action）
-    ├── ai.ts             # AI 对手逻辑
+    ├── board.ts          # 棋盘基础工具
+    ├── logic.ts          # 规则引擎（落子、提子、计分）
+    ├── reducer.ts        # useReducer 状态机
+    ├── result.ts         # 结果格式化
+    ├── sgf.ts            # 纯 SGF 编码
+    ├── evaluate.ts       # 形势判断
     ├── ownership.ts      # 自动领地归属判定
-    └── sgf.ts            # SGF 导出 + 存档持久化
+    ├── ai/
+    │   └── heuristicAi.ts # 启发式 AI 对手
+    └── modes/            # play/review/try 模式处理器
 ```
 
 ## 架构
@@ -59,15 +77,29 @@ src/
 采用 Model-View-Update 模式，通过 React `useReducer` 驱动：
 
 ```
-App.tsx (状态管理)
-  ├── GoBoard.tsx   (SVG 棋盘视图)
-  └── GamePanel.tsx (控制面板 UI)
+app/App.tsx (屏幕切换)
+  └── GameProvider (useReducer 状态容器)
+        ├── screens/GameScreen.tsx
+        │     ├── components/board/GoBoard.tsx
+        │     └── components/panel/GamePanel.tsx
+        └── hooks/
+              ├── useGameAI.ts
+              ├── useGameAutoSave.ts
+              └── useGamePersistence.ts
         │ dispatch(action)
   gameReducer (reducer.ts)
         ├── logic.ts      (规则)
         ├── ownership.ts  (数子)
-        └── ai.ts         (AI)
+        ├── result.ts     (结果)
+        └── ai/heuristicAi.ts (AI)
+
+services/
+  ├── gameRecords.ts      (localStorage)
+  └── sgfDownload.ts      (浏览器下载)
 ```
+
+`game/` 是领域核心，保持纯 TypeScript：不直接访问 React、DOM、`localStorage` 或网络。  
+`services/` 负责浏览器能力和外部集成；以后接 GTP 引擎时建议新增 `services/gtpClient.ts`，再在 `game/ai/` 下添加对应的 AI 适配器。
 
 ## License
 

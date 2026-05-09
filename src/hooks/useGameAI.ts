@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { GameState } from '../game/types'
 import type { GameAction } from '../game/reducer'
-import { selectMove } from '../game/ai'
+import { selectMove } from '../game/ai/heuristicAi'
 
 export function useGameAI(state: GameState, dispatch: React.Dispatch<GameAction>) {
   const aiThinking = useRef(false)

@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
-import type { GameRecord } from "./game/types";
-import { GameProvider } from "./context/GameContext";
-import MenuScreen from "./screens/MenuScreen";
-import GameScreen from "./screens/GameScreen";
+import type { GameRecord } from "../game/types";
+import { GameProvider } from "../context/GameContext";
+import MenuScreen from "../screens/MenuScreen";
+import GameScreen from "../screens/GameScreen";
 import styles from "./App.module.css";
 
 type Screen = "menu" | "game";

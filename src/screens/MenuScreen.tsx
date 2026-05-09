@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import type { GameRecord } from "../game/types";
-import { loadRecords, deleteRecord } from "../game/sgf";
+import { loadRecords, deleteRecord } from "../services/gameRecords";
 import styles from "./MenuScreen.module.css";
 
 interface MenuScreenProps {
