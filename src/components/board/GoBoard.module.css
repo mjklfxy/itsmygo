@@ -6,6 +6,17 @@
   max-width: calc(100vh - 120px);
 }
 
+@media (max-width: 720px) {
+  .board {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .coordText {
+    font-size: 8px;
+  }
+}
+
 .boardBg {
   fill: #f5e6d3;
 }

@@ -4,6 +4,7 @@ import { useGameContext } from '../../hooks/useGameContext'
 import { StoneFace } from './StoneFace'
 import { getStoneExpression } from './stoneFaceExpressions'
 import { GoldenBurst } from './GoldenBurst'
+import { getLastMoveMarker } from './lastMoveMarker'
 import { TerritoryOverlay } from './TerritoryOverlay'
 import styles from './GoBoard.module.css'
 
@@ -109,6 +110,7 @@ export default function GoBoard() {
         const key = `${x},${y}`
         const libs = libertyMap.get(key) ?? 2
         const isBurst = burstPos && burstPos[0] === x && burstPos[1] === y
+        const lastMoveMarker = getLastMoveMarker(lastMove, x, y, sr)
         const expr = getStoneExpression(libs, Boolean(isBurst))
         const sx = toP(x), sy = toP(y)
         return (
@@ -120,6 +122,69 @@ export default function GoBoard() {
             <g transform={`translate(${sx},${sy})`}>
               <StoneFace expression={expr} stoneColor={stone} r={sr} />
             </g>
+            {lastMoveMarker && (
+              <g
+                transform={`translate(${sx + lastMoveMarker.dx},${sy + lastMoveMarker.dy})`}
+                pointerEvents="none"
+              >
+                <path
+                  d={[
+                    `M ${-lastMoveMarker.size * 0.14} 0`,
+                    `C ${-lastMoveMarker.size * 0.95} ${-lastMoveMarker.size * 0.78}`,
+                    `${-lastMoveMarker.size * 1.55} ${-lastMoveMarker.size * 0.42}`,
+                    `${-lastMoveMarker.size * 1.25} 0`,
+                    `C ${-lastMoveMarker.size * 1.55} ${lastMoveMarker.size * 0.42}`,
+                    `${-lastMoveMarker.size * 0.95} ${lastMoveMarker.size * 0.78}`,
+                    `${-lastMoveMarker.size * 0.14} 0`,
+                    'Z',
+                  ].join(' ')}
+                  fill="#ef4444"
+                  stroke="#fff7ed"
+                  strokeWidth={Math.max(0.8, sr * 0.045)}
+                  strokeLinejoin="round"
+                />
+                <path
+                  d={[
+                    `M ${lastMoveMarker.size * 0.14} 0`,
+                    `C ${lastMoveMarker.size * 0.95} ${-lastMoveMarker.size * 0.78}`,
+                    `${lastMoveMarker.size * 1.55} ${-lastMoveMarker.size * 0.42}`,
+                    `${lastMoveMarker.size * 1.25} 0`,
+                    `C ${lastMoveMarker.size * 1.55} ${lastMoveMarker.size * 0.42}`,
+                    `${lastMoveMarker.size * 0.95} ${lastMoveMarker.size * 0.78}`,
+                    `${lastMoveMarker.size * 0.14} 0`,
+                    'Z',
+                  ].join(' ')}
+                  fill="#ef4444"
+                  stroke="#fff7ed"
+                  strokeWidth={Math.max(0.8, sr * 0.045)}
+                  strokeLinejoin="round"
+                />
+                <path
+                  d={[
+                    `M ${-lastMoveMarker.size * 0.28} ${lastMoveMarker.size * 0.18}`,
+                    `L ${-lastMoveMarker.size * 0.72} ${lastMoveMarker.size * 0.86}`,
+                    `L ${-lastMoveMarker.size * 0.18} ${lastMoveMarker.size * 0.62}`,
+                    'Z',
+                    `M ${lastMoveMarker.size * 0.28} ${lastMoveMarker.size * 0.18}`,
+                    `L ${lastMoveMarker.size * 0.72} ${lastMoveMarker.size * 0.86}`,
+                    `L ${lastMoveMarker.size * 0.18} ${lastMoveMarker.size * 0.62}`,
+                    'Z',
+                  ].join(' ')}
+                  fill="#dc2626"
+                  stroke="#fff7ed"
+                  strokeWidth={Math.max(0.7, sr * 0.035)}
+                  strokeLinejoin="round"
+                />
+                <circle
+                  cx={0}
+                  cy={0}
+                  r={lastMoveMarker.size * 0.32}
+                  fill="#b91c1c"
+                  stroke="#fff7ed"
+                  strokeWidth={Math.max(0.6, sr * 0.035)}
+                />
+              </g>
+            )}
             {isBurst && <GoldenBurst cx={sx} cy={sy} r={sr} />}
           </g>
         )
