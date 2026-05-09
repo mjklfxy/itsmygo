@@ -1,5 +1,5 @@
-import type { Board } from '../game/types'
-import type { Stone } from '../game/types'
+import type { Board } from '../../game/types'
+import type { Stone } from '../../game/types'
 
 interface TerritoryOverlayProps {
   board: Board

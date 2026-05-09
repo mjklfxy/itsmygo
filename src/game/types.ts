@@ -1,6 +1,7 @@
 export type Stone = 0 | 1 | -1 // 0=empty, 1=black, -1=white
 export type Board = Stone[][]
 export type Player = 1 | -1
+export type GameEndReason = 'pass' | 'resign' | 'count'
 
 export interface Move {
   x: number
@@ -27,11 +28,14 @@ export interface GameState {
   captures: { black: number; white: number }
   consecutivePasses: number
   gameOver: boolean
+  gameEndReason: GameEndReason | null
+  gameResult: string | null
   winner: Player | null
   lastMove: [number, number] | null
   moves: Move[]
   mode: 'play' | 'review' | 'try'
   reviewIndex: number
+  reviewFinalBoard: Board | null
   savedBoard: Board | null
   savedPlayer: Player
   savedHistory: Board[]

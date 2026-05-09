@@ -1,8 +1,8 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
-import { findGroup } from '../game/logic'
-import { useGameContext } from '../hooks/useGameContext'
+import { findGroup } from '../../game/logic'
+import { useGameContext } from '../../hooks/useGameContext'
 import { StoneFace } from './StoneFace'
-import { getExpression } from './stoneFaceExpressions'
+import { getStoneExpression } from './stoneFaceExpressions'
 import { GoldenBurst } from './GoldenBurst'
 import { TerritoryOverlay } from './TerritoryOverlay'
 import styles from './GoBoard.module.css'
@@ -109,7 +109,7 @@ export default function GoBoard() {
         const key = `${x},${y}`
         const libs = libertyMap.get(key) ?? 2
         const isBurst = burstPos && burstPos[0] === x && burstPos[1] === y
-        const expr = isBurst ? 'surprised' : getExpression(libs)
+        const expr = getStoneExpression(libs, Boolean(isBurst))
         const sx = toP(x), sy = toP(y)
         return (
           <g key={`st${key}`}>
