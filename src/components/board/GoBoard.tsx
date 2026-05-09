@@ -127,52 +127,40 @@ export default function GoBoard() {
                 transform={`translate(${sx + lastMoveMarker.dx},${sy + lastMoveMarker.dy})`}
                 pointerEvents="none"
               >
-                <path
-                  d={[
-                    `M ${-lastMoveMarker.size * 0.14} 0`,
-                    `C ${-lastMoveMarker.size * 0.95} ${-lastMoveMarker.size * 0.78}`,
-                    `${-lastMoveMarker.size * 1.55} ${-lastMoveMarker.size * 0.42}`,
-                    `${-lastMoveMarker.size * 1.25} 0`,
-                    `C ${-lastMoveMarker.size * 1.55} ${lastMoveMarker.size * 0.42}`,
-                    `${-lastMoveMarker.size * 0.95} ${lastMoveMarker.size * 0.78}`,
-                    `${-lastMoveMarker.size * 0.14} 0`,
-                    'Z',
-                  ].join(' ')}
+                <ellipse
+                  cx={-lastMoveMarker.size * 0.58}
+                  cy={0}
+                  rx={lastMoveMarker.size * 0.62}
+                  ry={lastMoveMarker.size * 0.34}
+                  transform={`rotate(-28 ${-lastMoveMarker.size * 0.58} 0)`}
                   fill="#ef4444"
                   stroke="#fff7ed"
-                  strokeWidth={Math.max(0.8, sr * 0.045)}
-                  strokeLinejoin="round"
+                  strokeWidth={Math.max(0.5, sr * 0.025)}
+                />
+                <ellipse
+                  cx={lastMoveMarker.size * 0.58}
+                  cy={0}
+                  rx={lastMoveMarker.size * 0.62}
+                  ry={lastMoveMarker.size * 0.34}
+                  transform={`rotate(28 ${lastMoveMarker.size * 0.58} 0)`}
+                  fill="#ef4444"
+                  stroke="#fff7ed"
+                  strokeWidth={Math.max(0.5, sr * 0.025)}
                 />
                 <path
                   d={[
-                    `M ${lastMoveMarker.size * 0.14} 0`,
-                    `C ${lastMoveMarker.size * 0.95} ${-lastMoveMarker.size * 0.78}`,
-                    `${lastMoveMarker.size * 1.55} ${-lastMoveMarker.size * 0.42}`,
-                    `${lastMoveMarker.size * 1.25} 0`,
-                    `C ${lastMoveMarker.size * 1.55} ${lastMoveMarker.size * 0.42}`,
-                    `${lastMoveMarker.size * 0.95} ${lastMoveMarker.size * 0.78}`,
-                    `${lastMoveMarker.size * 0.14} 0`,
+                    `M ${-lastMoveMarker.size * 0.2} ${lastMoveMarker.size * 0.2}`,
+                    `L ${-lastMoveMarker.size * 0.56} ${lastMoveMarker.size * 0.72}`,
+                    `L ${-lastMoveMarker.size * 0.08} ${lastMoveMarker.size * 0.54}`,
                     'Z',
-                  ].join(' ')}
-                  fill="#ef4444"
-                  stroke="#fff7ed"
-                  strokeWidth={Math.max(0.8, sr * 0.045)}
-                  strokeLinejoin="round"
-                />
-                <path
-                  d={[
-                    `M ${-lastMoveMarker.size * 0.28} ${lastMoveMarker.size * 0.18}`,
-                    `L ${-lastMoveMarker.size * 0.72} ${lastMoveMarker.size * 0.86}`,
-                    `L ${-lastMoveMarker.size * 0.18} ${lastMoveMarker.size * 0.62}`,
-                    'Z',
-                    `M ${lastMoveMarker.size * 0.28} ${lastMoveMarker.size * 0.18}`,
-                    `L ${lastMoveMarker.size * 0.72} ${lastMoveMarker.size * 0.86}`,
-                    `L ${lastMoveMarker.size * 0.18} ${lastMoveMarker.size * 0.62}`,
+                    `M ${lastMoveMarker.size * 0.2} ${lastMoveMarker.size * 0.2}`,
+                    `L ${lastMoveMarker.size * 0.56} ${lastMoveMarker.size * 0.72}`,
+                    `L ${lastMoveMarker.size * 0.08} ${lastMoveMarker.size * 0.54}`,
                     'Z',
                   ].join(' ')}
                   fill="#dc2626"
                   stroke="#fff7ed"
-                  strokeWidth={Math.max(0.7, sr * 0.035)}
+                  strokeWidth={Math.max(0.45, sr * 0.02)}
                   strokeLinejoin="round"
                 />
                 <circle

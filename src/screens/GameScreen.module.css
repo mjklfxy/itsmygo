@@ -1,11 +1,5 @@
 .title {
-  font-family: 'Nunito', 'Segoe UI', sans-serif;
-  font-size: 28px;
-  font-weight: 800;
-  color: #a0785a;
-  margin: 0 0 12px;
-  letter-spacing: 3px;
-  flex-shrink: 0;
+  display: none;
 }
 
 .gameArea {
@@ -22,12 +16,16 @@
   flex: 1;
   max-width: min(calc(100vh - 100px), calc(100vw - 350px));
   aspect-ratio: 1;
-  padding: 12px;
-  background: linear-gradient(145deg, #f0dcc8, #e8d0b8);
-  border-radius: 14px;
+  padding: 14px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.12) 50%, transparent 50%) 0 0 / 20px 20px,
+    linear-gradient(145deg, #ffe4bc, #f4cfa0 48%, #e8b98c);
+  border: 3px solid #fff6e5;
+  border-radius: 18px;
   box-shadow:
-    0 6px 24px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    0 10px 0 rgba(91, 64, 52, 0.11),
+    0 18px 34px rgba(87, 57, 44, 0.12),
+    inset 0 0 0 2px rgba(142, 90, 54, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,6 +66,10 @@
     max-height: 100%;
     padding: 7px;
     border-radius: 12px;
+    background: linear-gradient(145deg, #ffe6bf, #efc891);
+    box-shadow:
+      0 6px 0 rgba(91, 64, 52, 0.1),
+      inset 0 0 0 2px rgba(142, 90, 54, 0.08);
   }
 
   .finalScore {

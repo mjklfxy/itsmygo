@@ -8,7 +8,9 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
-  background: linear-gradient(160deg, #faf6f1 0%, #f0e8df 50%, #e8ddd2 100%);
+  background:
+    repeating-linear-gradient(45deg, rgba(98, 63, 78, 0.035) 0 1px, transparent 1px 12px),
+    linear-gradient(145deg, #fff8e8 0%, #e8f5ef 48%, #fff1f3 100%);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

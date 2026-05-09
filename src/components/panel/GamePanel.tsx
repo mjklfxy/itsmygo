@@ -131,6 +131,7 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
               disabled={state.reviewIndex <= 0}>&lt; 上一步</button>
             <button className={`${styles.btn} ${styles.btnNav}`} onClick={() => dispatch({ type: 'REVIEW_NEXT' })}
               disabled={state.reviewIndex >= state.moves.length}>下一步 &gt;</button>
+            <button className={`${styles.btn} ${styles.btnTry}`} onClick={() => dispatch({ type: 'ENTER_TRY' })}>摆棋</button>
           </div>
         </>
       )}
@@ -145,6 +146,7 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
             <button className={`${styles.btn} ${styles.btnResign}`} onClick={() => dispatch({ type: 'RESIGN' })} disabled={!isPlaying}>认输</button>
             <button className={`${styles.btn} ${styles.btnCount}`} onClick={() => dispatch({ type: 'REQUEST_COUNT' })}
               disabled={!isPlaying}>数子</button>
+            <button className={`${styles.btn} ${styles.btnTry}`} onClick={() => dispatch({ type: 'ENTER_TRY' })} disabled={!canTry}>摆棋</button>
           </div>
         </>
       )}
@@ -217,17 +219,6 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
             <div className={styles.settingsGrid}>
               <button className={styles.settingsButton} type="button" onClick={onBackToMenu}>返回主菜单</button>
               <button className={styles.settingsButton} type="button" onClick={saveSGF} disabled={state.moves.length === 0}>保存 SGF</button>
-              <button
-                className={styles.settingsButton}
-                type="button"
-                onClick={() => {
-                  dispatch({ type: 'ENTER_TRY' })
-                  setShowSettings(false)
-                }}
-                disabled={!canTry}
-              >
-                摆棋试下
-              </button>
               <button className={styles.settingsButton} type="button" disabled>对战历史</button>
               <button className={styles.settingsButton} type="button" disabled>棋盘设置</button>
               <button className={styles.settingsButton} type="button" disabled>音效设置</button>
