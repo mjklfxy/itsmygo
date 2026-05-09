@@ -1,6 +1,6 @@
-import type { Board, Player, Stone } from './types'
-import { getNeighbors } from './board'
-import { placeStone, findGroup } from './logic'
+import type { Board, Player, Stone } from '../types'
+import { getNeighbors } from '../board'
+import { placeStone, findGroup } from '../logic'
 
 function countStones(board: Board): number {
   let n = 0

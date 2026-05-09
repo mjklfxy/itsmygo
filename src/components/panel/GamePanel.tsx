@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
-import { score } from '../game/logic'
-import { evaluate } from '../game/evaluate'
-import { loadRecords, deleteRecord } from '../game/sgf'
-import { useGameContext } from '../hooks/useGameContext'
-import { useGamePersistence } from '../hooks/useGamePersistence'
+import type { GameRecord } from '../../game/types'
+import { score } from '../../game/logic'
+import { evaluate } from '../../game/evaluate'
+import { loadRecords, deleteRecord } from '../../services/gameRecords'
+import { useGameContext } from '../../hooks/useGameContext'
+import { useGamePersistence } from '../../hooks/useGamePersistence'
 import styles from './GamePanel.module.css'
 
 interface GamePanelProps {
@@ -14,6 +15,7 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
   const { state, dispatch } = useGameContext()
   const { saveSGF } = useGamePersistence(state)
   const [showHistory, setShowHistory] = useState(false)
+  const [savedRecords, setSavedRecords] = useState<GameRecord[]>([])
 
   const scores = state.gameOver ? score(state.board, state.captures, state.komi) : null
   const evalResult = useMemo(
@@ -21,8 +23,6 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
       ? evaluate(state.board, state.captures, state.komi) : null),
     [state.board, state.captures, state.gameOver, state.mode, state.history.length, state.komi]
   )
-
-  const savedRecords = useMemo(() => showHistory ? loadRecords() : [], [showHistory])
 
   const isPlaying = state.mode === 'play' && !state.gameOver
   const isReview = state.mode === 'review'
@@ -33,7 +33,7 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
       {/* Mode indicator */}
       {isReview && (
         <div className={styles.modeTag}>
-          复盘模式 · 第 {state.reviewIndex + 1} / {state.history.length} 手
+          复盘模式 · 第 {state.reviewIndex} / {state.moves.length} 手
           <button className={styles.modeExit} onClick={() => dispatch({ type: 'EXIT_REVIEW' })}>退出</button>
         </div>
       )}
@@ -138,7 +138,7 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
             <button className={`${styles.btn} ${styles.btnNav}`} onClick={() => dispatch({ type: 'REVIEW_PREV' })}
               disabled={state.reviewIndex <= 0}>&lt; 上一步</button>
             <button className={`${styles.btn} ${styles.btnNav}`} onClick={() => dispatch({ type: 'REVIEW_NEXT' })}
-              disabled={state.reviewIndex >= state.history.length - 1}>下一步 &gt;</button>
+              disabled={state.reviewIndex >= state.moves.length}>下一步 &gt;</button>
           </div>
           <div className={styles.buttons}>
             <button className={`${styles.btn} ${styles.btnTry}`} onClick={() => dispatch({ type: 'ENTER_TRY' })}>摆棋试下</button>
@@ -241,8 +241,11 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
       </button>
 
       {/* History toggle */}
-      <button className={styles.historyToggle} onClick={() => setShowHistory(!showHistory)}>
-        {showHistory ? '收起历史' : '对战历史'} ({loadRecords().length})
+      <button className={styles.historyToggle} onClick={() => {
+        if (!showHistory) setSavedRecords(loadRecords())
+        setShowHistory(!showHistory)
+      }}>
+        {showHistory ? '收起历史' : '对战历史'} ({showHistory ? savedRecords.length : loadRecords().length})
       </button>
 
       {showHistory && (
@@ -256,7 +259,7 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
               </div>
               <div className={styles.historyInfo}>
                 <span>{rec.moves.length} 手</span>
-                <button className={styles.historyDel} onClick={() => { deleteRecord(rec.id); setShowHistory(true) }}>删除</button>
+                <button className={styles.historyDel} onClick={() => { deleteRecord(rec.id); setSavedRecords(loadRecords()) }}>删除</button>
               </div>
             </div>
           ))}

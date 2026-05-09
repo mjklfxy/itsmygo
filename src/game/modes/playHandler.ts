@@ -68,6 +68,8 @@ export function handleUndo(state: GameState): GameState {
       moves: newMoves,
       consecutivePasses: prevMove?.pass ? 1 : 0,
       gameOver: false,
+      gameEndReason: null,
+      gameResult: null,
       winner: null,
       lastMove: null,
     };
@@ -91,6 +93,8 @@ export function handleUndo(state: GameState): GameState {
     moves: state.moves.slice(0, -1),
     consecutivePasses: lastUndo?.pass ? 1 : 0,
     gameOver: false,
+    gameEndReason: null,
+    gameResult: null,
     winner: null,
     lastMove: null,
   };
@@ -106,6 +110,13 @@ export function handlePass(state: GameState): GameState {
       ...state,
       consecutivePasses: newPasses,
       gameOver: true,
+      gameEndReason: "pass",
+      gameResult:
+        scores.black > scores.white
+          ? `B+${Math.round(scores.black - scores.white)}`
+          : scores.white > scores.black
+            ? `W+${Math.round(scores.white - scores.black)}`
+            : "Draw",
       winner:
         scores.black > scores.white
           ? 1
@@ -131,6 +142,8 @@ export function handleResign(state: GameState): GameState {
   return {
     ...state,
     gameOver: true,
+    gameEndReason: "resign",
+    gameResult: `${-state.currentPlayer === 1 ? "B" : "W"}+Resign`,
     winner: -state.currentPlayer as Player,
     history: [...state.history, state.board],
   };
@@ -162,6 +175,8 @@ export function handleAcceptCount(state: GameState): GameState {
   return {
     ...state,
     gameOver: true,
+    gameEndReason: "count",
+    gameResult: b > w ? `B+${Math.round(b - w)}` : w > b ? `W+${Math.round(w - b)}` : "Draw",
     winner: b > w ? 1 : w > b ? -1 : null,
     countingMode: "none",
     countingTerritory: null,

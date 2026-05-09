@@ -14,3 +14,8 @@ export function getExpression(liberties: number): Expression {
   if (liberties >= 2) return 'worried'
   return 'scared'
 }
+
+export function getStoneExpression(liberties: number, isBursting: boolean): Expression {
+  void isBursting
+  return getExpression(liberties)
+}
