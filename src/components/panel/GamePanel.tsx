@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react'
-import type { GameRecord } from '../../game/types'
 import { score } from '../../game/logic'
 import { evaluate } from '../../game/evaluate'
-import { loadRecords, deleteRecord } from '../../services/gameRecords'
 import { useGameContext } from '../../hooks/useGameContext'
 import { useGamePersistence } from '../../hooks/useGamePersistence'
 import styles from './GamePanel.module.css'
@@ -14,8 +12,7 @@ interface GamePanelProps {
 export default function GamePanel({ onBackToMenu }: GamePanelProps) {
   const { state, dispatch } = useGameContext()
   const { saveSGF } = useGamePersistence(state)
-  const [showHistory, setShowHistory] = useState(false)
-  const [savedRecords, setSavedRecords] = useState<GameRecord[]>([])
+  const [showSettings, setShowSettings] = useState(false)
 
   const scores = state.gameOver ? score(state.board, state.captures, state.komi) : null
   const evalResult = useMemo(
@@ -27,9 +24,23 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
   const isPlaying = state.mode === 'play' && !state.gameOver
   const isReview = state.mode === 'review'
   const isTry = state.mode === 'try'
+  const blackLead = evalResult ? evalResult.black - evalResult.white : null
+  const canTry = !isTry && state.moves.length > 0 && !state.gameOver
 
   return (
     <div className={styles.panel}>
+      <div className={styles.mobileHeader}>
+        <div className={styles.mobileTools}>
+          <button className={styles.mobileToolButton} type="button" aria-label="主页占位" disabled>⌂</button>
+          <button className={styles.mobileToolButton} type="button" aria-label="用户占位" disabled>♙</button>
+          <button className={styles.mobileToolButton} type="button" onClick={() => setShowSettings(true)} aria-label="设置">⚙</button>
+        </div>
+        <div className={styles.mobileBrand}>
+          <div className={styles.mobileTitle}>围棋</div>
+          <div className={styles.mobileMeta}>{state.size}路 · {state.aiMode === 'none' ? '双人对战' : '本地 AI'}</div>
+        </div>
+      </div>
+
       {/* Mode indicator */}
       {isReview && (
         <div className={styles.modeTag}>
@@ -53,10 +64,18 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
       {/* Turn / Winner */}
       {!state.gameOver && !isReview && (
         <div className={styles.turn}>
-          <div className={`${styles.turnIndicator} ${state.currentPlayer === 1 ? styles.turnBlack : styles.turnWhite}`} />
-          <span className={styles.turnText}>
-            {isTry ? '摆棋中' : state.currentPlayer === 1 ? '黑方落子' : '白方落子'}
-          </span>
+          <div className={styles.turnMain}>
+            <div className={`${styles.turnIndicator} ${state.currentPlayer === 1 ? styles.turnBlack : styles.turnWhite}`} />
+            <span className={styles.turnText}>
+              {isTry ? '摆棋中' : state.currentPlayer === 1 ? '黑方落子' : '白方落子'}
+            </span>
+          </div>
+          <div className={styles.turnMetaGroup}>
+            <span className={styles.gameMeta}>{state.moves.length}手 · {state.size}路 · 贴{state.komi}</span>
+            <button className={styles.moreIconButton} type="button" onClick={() => setShowSettings(true)} aria-label="设置">
+              ⚙
+            </button>
+          </div>
         </div>
       )}
       {state.gameOver && (
@@ -65,57 +84,35 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
         </div>
       )}
 
+      <div className={styles.playerCards}>
+        <div className={`${styles.playerCard} ${state.currentPlayer === 1 && !state.gameOver ? styles.activePlayerCard : ''}`}>
+          <span className={`${styles.playerStone} ${styles.turnBlack}`} />
+          <span className={styles.playerName}>黑子</span>
+          <span className={styles.playerCaptures}>提子: {state.captures.black}</span>
+        </div>
+        <div className={`${styles.playerCard} ${state.currentPlayer === -1 && !state.gameOver ? styles.activePlayerCard : ''}`}>
+          <span className={styles.playerName}>白子</span>
+          <span className={styles.playerCaptures}>提子: {state.captures.white}</span>
+          <span className={`${styles.playerStone} ${styles.turnWhite}`} />
+        </div>
+      </div>
+
       {/* Evaluation */}
       {evalResult && (
         <div className={styles.evaluation}>
-          <div className={styles.evalTitle}>形势判断</div>
-          <div className={styles.winRate}>
-            <div className={styles.winRateLabel}>AI胜率</div>
+          <div className={styles.evalLead}>
+            {blackLead === null ? '形势判断' : blackLead > 0 ? `黑领先 ${blackLead}目` : blackLead < 0 ? `白领先 ${Math.abs(blackLead)}目` : '形势均衡'}
+          </div>
+          <div className={styles.winRateRow}>
+            <span className={`${styles.evalPercent} ${styles.evalBlack}`}>黑胜率 {Math.round(evalResult.winRate * 100)}%</span>
             <div className={styles.winRateBar}>
               <div className={styles.winRateBlack}
                 style={{ width: `${evalResult.winRate * 100}%` }} />
             </div>
-            <div className={styles.winRateValues}>
-              <span className={styles.evalBlack}>{Math.round(evalResult.winRate * 100)}%</span>
-              <span className={styles.evalWhite}>{Math.round((1 - evalResult.winRate) * 100)}%</span>
-            </div>
-          </div>
-          <div className={styles.evalScores}>
-            <span className={styles.evalBlack}>黑 {evalResult.black}</span>
-            <span className={styles.evalDiff}>
-              {evalResult.black > evalResult.white ? `黑+${evalResult.black - evalResult.white}`
-                : evalResult.white > evalResult.black ? `白+${evalResult.white - evalResult.black}` : '均势'}
-            </span>
-            <span className={styles.evalWhite}>白 {evalResult.white}</span>
-          </div>
-          <div className={styles.evalBreakdown}>
-            <div className={styles.evalRow}>
-              <span className={styles.evalLabel}>实地</span>
-              <span className={styles.evalBlack}>{evalResult.blackTerritory}</span>
-              <span className={styles.evalSep}>|</span>
-              <span className={styles.evalWhite}>{evalResult.whiteTerritory}</span>
-            </div>
-            <div className={styles.evalRow}>
-              <span className={styles.evalLabel}>势力</span>
-              <span className={styles.evalBlack}>{evalResult.blackInfluence}</span>
-              <span className={styles.evalSep}>|</span>
-              <span className={styles.evalWhite}>{evalResult.whiteInfluence}</span>
-            </div>
+            <span className={`${styles.evalPercent} ${styles.evalWhite}`}>白 {Math.round((1 - evalResult.winRate) * 100)}%</span>
           </div>
         </div>
       )}
-
-      {/* Captures */}
-      <div className={styles.stats}>
-        <div className={styles.statItem}>
-          <span className={styles.statLabel}><span className={`${styles.miniStone} ${styles.miniBlack}`} />黑提子</span>
-          <span className={styles.statValue}>{state.captures.black}</span>
-        </div>
-        <div className={styles.statItem}>
-          <span className={styles.statLabel}><span className={`${styles.miniStone} ${styles.miniWhite}`} />白提子</span>
-          <span className={styles.statValue}>{state.captures.white}</span>
-        </div>
-      </div>
 
       {/* Scores */}
       {scores && (
@@ -124,11 +121,6 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
           <div className={styles.scoreItem}><span>白方</span><span className={styles.scoreValue}>{scores.white} 目</span></div>
           <div className={styles.komiNote}>含贴目 {state.komi}</div>
         </div>
-      )}
-
-      {/* Komi display during play */}
-      {!state.gameOver && !scores && (
-        <div className={styles.komiNote}>贴目 {state.komi} · {state.aiMode === 'none' ? '双人对战' : `AI对战 · 你执${state.aiMode === 'white' ? '黑' : '白'}`}</div>
       )}
 
       {/* Review nav */}
@@ -140,30 +132,20 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
             <button className={`${styles.btn} ${styles.btnNav}`} onClick={() => dispatch({ type: 'REVIEW_NEXT' })}
               disabled={state.reviewIndex >= state.moves.length}>下一步 &gt;</button>
           </div>
-          <div className={styles.buttons}>
-            <button className={`${styles.btn} ${styles.btnTry}`} onClick={() => dispatch({ type: 'ENTER_TRY' })}>摆棋试下</button>
-          </div>
         </>
       )}
 
       {/* Game controls */}
       {!isReview && !isTry && state.countingMode === 'none' && (
         <>
-          <div className={styles.buttons}>
+          <div className={`${styles.buttons} ${styles.primaryControls}`}>
             <button className={`${styles.btn} ${styles.btnPass}`} onClick={() => dispatch({ type: 'PASS' })} disabled={!isPlaying}>Pass</button>
             <button className={`${styles.btn} ${styles.btnUndo}`} onClick={() => dispatch({ type: 'UNDO' })}
               disabled={state.history.length === 0 || state.gameOver}>悔棋</button>
-          </div>
-          <div className={styles.buttons}>
             <button className={`${styles.btn} ${styles.btnResign}`} onClick={() => dispatch({ type: 'RESIGN' })} disabled={!isPlaying}>认输</button>
             <button className={`${styles.btn} ${styles.btnCount}`} onClick={() => dispatch({ type: 'REQUEST_COUNT' })}
               disabled={!isPlaying}>数子</button>
           </div>
-          {state.moves.length > 0 && !state.gameOver && (
-            <div className={styles.buttons}>
-              <button className={`${styles.btn} ${styles.btnTry}`} onClick={() => dispatch({ type: 'ENTER_TRY' })}>摆棋试下</button>
-            </div>
-          )}
         </>
       )}
 
@@ -220,49 +202,40 @@ export default function GamePanel({ onBackToMenu }: GamePanelProps) {
 
       {/* Post-game actions */}
       {state.gameOver && !isReview && (
-        <div className={styles.buttons}>
+        <div className={`${styles.buttons} ${styles.primaryControls}`}>
           <button className={`${styles.btn} ${styles.btnReview}`} onClick={() => dispatch({ type: 'ENTER_REVIEW' })}>复盘</button>
         </div>
       )}
 
-      {/* Save */}
-      {state.moves.length > 0 && (
-        <div className={styles.buttons}>
-          <button className={`${styles.btn} ${styles.btnSave}`} onClick={saveSGF}>保存 SGF</button>
-        </div>
-      )}
-
-      {/* Move count */}
-      <div className={styles.moveCount}>手数: {state.moves.length} · {state.size}路 · 贴目{state.komi}</div>
-
-      {/* Back to menu */}
-      <button className={styles.historyToggle} onClick={onBackToMenu}>
-        返回主菜单
-      </button>
-
-      {/* History toggle */}
-      <button className={styles.historyToggle} onClick={() => {
-        if (!showHistory) setSavedRecords(loadRecords())
-        setShowHistory(!showHistory)
-      }}>
-        {showHistory ? '收起历史' : '对战历史'} ({showHistory ? savedRecords.length : loadRecords().length})
-      </button>
-
-      {showHistory && (
-        <div className={styles.historyList}>
-          {savedRecords.length === 0 && <div className={styles.historyEmpty}>暂无记录</div>}
-          {savedRecords.map(rec => (
-            <div key={rec.id} className={styles.historyItem}>
-              <div className={styles.historyInfo}>
-                <span>{rec.size}路 · {rec.date}</span>
-                <span className={styles.historyResult}>{rec.result}</span>
-              </div>
-              <div className={styles.historyInfo}>
-                <span>{rec.moves.length} 手</span>
-                <button className={styles.historyDel} onClick={() => { deleteRecord(rec.id); setSavedRecords(loadRecords()) }}>删除</button>
-              </div>
+      {showSettings && (
+        <div className={styles.modalLayer} role="dialog" aria-modal="true" aria-label="设置">
+          <div className={styles.settingsModal}>
+            <div className={styles.settingsHeader}>
+              <span>设置</span>
+              <button className={styles.modalClose} type="button" onClick={() => setShowSettings(false)} aria-label="关闭设置">×</button>
             </div>
-          ))}
+            <div className={styles.settingsGrid}>
+              <button className={styles.settingsButton} type="button" onClick={onBackToMenu}>返回主菜单</button>
+              <button className={styles.settingsButton} type="button" onClick={saveSGF} disabled={state.moves.length === 0}>保存 SGF</button>
+              <button
+                className={styles.settingsButton}
+                type="button"
+                onClick={() => {
+                  dispatch({ type: 'ENTER_TRY' })
+                  setShowSettings(false)
+                }}
+                disabled={!canTry}
+              >
+                摆棋试下
+              </button>
+              <button className={styles.settingsButton} type="button" disabled>对战历史</button>
+              <button className={styles.settingsButton} type="button" disabled>棋盘设置</button>
+              <button className={styles.settingsButton} type="button" disabled>音效设置</button>
+              <button className={styles.settingsButton} type="button" disabled>主题设置</button>
+              <button className={styles.settingsButton} type="button" disabled>规则说明</button>
+            </div>
+            <div className={styles.settingsHint}>占位项只展示入口，后续再接具体配置。</div>
+          </div>
         </div>
       )}
     </div>
