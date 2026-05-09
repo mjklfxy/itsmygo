@@ -6,3 +6,12 @@
   padding: 16px 20px;
   overflow: hidden;
 }
+
+@media (max-width: 720px) {
+  .container {
+    height: 100dvh;
+    min-height: 100dvh;
+    padding: 8px 10px 10px;
+    overflow: hidden;
+  }
+}

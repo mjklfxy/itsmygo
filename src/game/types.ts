@@ -40,6 +40,7 @@ export interface GameState {
   savedPlayer: Player
   savedHistory: Board[]
   savedReviewIndex: number
+  savedLastMove: [number, number] | null
   savedMode: 'play' | 'review'
   savedGameOver: boolean
   savedWinner: Player | null

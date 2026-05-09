@@ -26,4 +26,5 @@ tests/
 
 # AI Assistant / Editor files
 .claude/
+.codex/
 .opencode/

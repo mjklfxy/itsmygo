@@ -38,6 +38,7 @@ export function handleEnterTry(state: GameState): GameState {
     savedPlayer: state.currentPlayer,
     savedHistory: state.history,
     savedReviewIndex: state.reviewIndex,
+    savedLastMove: state.lastMove,
     savedGameOver: state.gameOver,
     savedWinner: state.winner,
     history: [],
@@ -56,6 +57,7 @@ export function handleExitTry(state: GameState): GameState {
     currentPlayer: state.savedPlayer,
     history: state.savedHistory,
     reviewIndex: state.savedReviewIndex,
+    lastMove: state.savedLastMove,
     gameOver: state.savedGameOver,
     winner: state.savedWinner,
   }

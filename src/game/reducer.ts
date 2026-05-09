@@ -44,6 +44,7 @@ export function createInitialState(size: number, komi: number = 7.5, aiMode: 'no
     savedPlayer: 1,
     savedHistory: [],
     savedReviewIndex: -1,
+    savedLastMove: null,
     savedMode: 'play',
     savedGameOver: false,
     savedWinner: null,

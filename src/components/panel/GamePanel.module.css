@@ -3,7 +3,7 @@
   border-radius: 16px;
   padding: 18px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-  width: 210px;
+  width: 280px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -12,6 +12,16 @@
   border: 1px solid rgba(0,0,0,0.04);
   max-height: calc(100vh - 80px);
   overflow-y: auto;
+}
+
+.mobileHeader {
+  display: none;
+}
+
+.playerCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 /* Mode tag */
@@ -41,10 +51,30 @@
 
 /* Turn */
 .turn { display: flex; align-items: center; gap: 10px; justify-content: center; }
+.turnMain { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .turnIndicator { width: 24px; height: 24px; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
 .turnBlack { background: radial-gradient(circle at 35% 35%, #666, #222); }
 .turnWhite { background: radial-gradient(circle at 35% 35%, #fff, #f0e8ee); border: 1px solid #d8ccd0; }
 .turnText { font-size: 16px; font-weight: 700; color: #7a6050; }
+.turnMetaGroup { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.gameMeta { display: inline; color: #a09080; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.moreIconButton {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(160, 120, 90, 0.18);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.56);
+  color: #8b7060;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 4px;
+  font-family: inherit;
+  cursor: pointer;
+}
 
 /* Winner */
 .winner {
@@ -57,21 +87,39 @@
 /* Evaluation */
 .evaluation { padding: 10px; background: rgba(255,255,255,0.5); border-radius: 10px; border: 1px solid rgba(0,0,0,0.04); }
 .evalTitle { font-size: 12px; font-weight: 700; color: #a08870; text-align: center; margin-bottom: 6px; }
+.evalLead {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.46);
+  color: #7a4f5e;
+  font-size: 12px;
+  font-weight: 900;
+}
 .evalScores { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; }
 .evalBlack { color: #444; }
 .evalWhite { color: #b09888; }
 .evalDiff { color: #c07850; font-size: 13px; font-weight: 800; }
+.evalDetails { margin-top: 6px; }
 .evalBreakdown { display: flex; flex-direction: column; gap: 2px; margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(0,0,0,0.06); }
 .evalRow { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
 .evalLabel { color: #a09080; font-weight: 600; flex: 0 0 28px; }
 .evalSep { color: #d0c4b8; font-size: 10px; }
 
 /* Win rate */
-.winRate { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
-.winRateLabel { font-size: 11px; font-weight: 700; color: #a08870; text-align: center; }
+.winRateRow { display: grid; grid-template-columns: auto minmax(48px, 1fr) auto auto; align-items: center; gap: 7px; }
 .winRateBar { height: 10px; border-radius: 5px; background: #e8dcd0; overflow: hidden; display: flex; }
 .winRateBlack { height: 100%; background: linear-gradient(90deg, #666, #333); border-radius: 5px 0 0 5px; transition: width 0.5s ease; }
-.winRateValues { display: flex; justify-content: space-between; font-size: 14px; font-weight: 800; }
+.evalPercent { font-size: 12px; font-weight: 800; white-space: nowrap; }
+.evalToggle {
+  width: 24px; height: 24px; border: 1px solid rgba(160,120,90,0.2); border-radius: 8px;
+  background: rgba(255,255,255,0.58); color: #8b7060; font-size: 11px; font-weight: 800;
+  line-height: 1; display: inline-flex; align-items: center; justify-content: center;
+  font-family: inherit; cursor: pointer; padding: 0;
+}
 
 /* Stats */
 .stats { display: flex; flex-direction: column; gap: 6px; }
@@ -90,6 +138,7 @@
 
 /* Buttons */
 .buttons { display: flex; gap: 6px; }
+.primaryControls { display: grid; grid-template-columns: repeat(auto-fit, minmax(64px, 1fr)); }
 .btn {
   flex: 1; padding: 7px 10px; border: none; border-radius: 8px; font-size: 13px; font-weight: 700;
   font-family: inherit; cursor: pointer; transition: all 0.15s ease;
@@ -121,6 +170,39 @@
 /* Move count */
 .moveCount { text-align: center; font-size: 12px; color: #a09080; font-weight: 600; }
 
+.moreToggle {
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 10px;
+  border: 1px solid rgba(160, 120, 90, 0.2);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.52);
+  color: #8b7060;
+  font-size: 12px;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.moreToggle:hover { border-color: #c0a888; background: #faf5ef; }
+
+.advancedSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.compactStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  color: #7a6050;
+  font-size: 12px;
+  font-weight: 800;
+}
+.compactStats span { display: inline-flex; align-items: center; gap: 5px; }
+
 /* History */
 .historyToggle {
   width: 100%; padding: 6px; border: 1px solid #e0d4c8; border-radius: 8px;
@@ -142,3 +224,367 @@
   font-family: inherit; font-weight: 600; padding: 0;
 }
 .historyDel:hover { color: #a05040; }
+
+.playerCard {
+  min-height: 52px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "stone name"
+    "stone captures";
+  align-items: center;
+  column-gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid rgba(180, 130, 145, 0.28);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.5);
+  color: #7a6050;
+}
+.playerCard:last-child {
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "name stone"
+    "captures stone";
+  text-align: right;
+}
+.activePlayerCard {
+  background: linear-gradient(135deg, #6f4b58, #5c3f4b);
+  color: #fff;
+  border-color: rgba(110, 75, 88, 0.42);
+  box-shadow: 0 6px 14px rgba(90, 55, 65, 0.16);
+}
+.playerStone {
+  grid-area: stone;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+.playerName {
+  grid-area: name;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+.playerCaptures {
+  grid-area: captures;
+  font-size: 11px;
+  font-weight: 800;
+  opacity: 0.9;
+}
+
+.modalLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(45, 34, 30, 0.36);
+}
+.settingsModal {
+  width: min(420px, 100%);
+  border-radius: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #faf5ef, #f0e8df);
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 20px 50px rgba(50, 35, 25, 0.22);
+}
+.settingsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  color: #7a6050;
+  font-size: 18px;
+  font-weight: 900;
+}
+.modalClose {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(160, 120, 90, 0.22);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.58);
+  color: #8b7060;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.settingsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.settingsButton {
+  min-height: 44px;
+  border: 1px solid rgba(160, 120, 90, 0.22);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.58);
+  color: #7a6050;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.settingsButton:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+.settingsHint {
+  margin-top: 10px;
+  color: #a09080;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .panel {
+    order: -1;
+    position: relative;
+    width: min(100%, 430px);
+    flex: 0 0 auto;
+    max-height: none;
+    overflow: visible;
+    padding: 12px 14px;
+    gap: 8px;
+    border-radius: 14px;
+  }
+
+  .mobileHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed rgba(180, 120, 140, 0.28);
+  }
+
+  .mobileTools {
+    display: flex;
+    gap: 8px;
+  }
+
+.mobileToolButton {
+    width: 44px;
+    height: 44px;
+    border: 2px solid rgba(105, 72, 82, 0.45);
+    border-radius: 12px;
+    background: linear-gradient(135deg, #b98796, #9f7383);
+    color: #fff;
+    box-shadow: 0 4px 0 rgba(90, 55, 65, 0.35);
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-family: inherit;
+  }
+
+  .mobileBrand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .mobileTitle {
+    color: #8b5f4a;
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .mobileMeta {
+    border: 1px solid rgba(200, 140, 150, 0.42);
+    border-radius: 999px;
+    color: #a37282;
+    background: rgba(255,255,255,0.45);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 9px;
+    white-space: nowrap;
+  }
+
+  .modeTag {
+    font-size: 12px;
+    padding: 7px 10px;
+  }
+
+  .turnIndicator {
+    width: 20px;
+    height: 20px;
+  }
+
+  .turnText {
+    font-size: 15px;
+  }
+
+  .turn {
+    display: none;
+  }
+
+  .gameMeta {
+    display: inline;
+  }
+
+  .moreIconButton {
+    display: inline-flex;
+  }
+
+  .evaluation,
+  .scores,
+  .countResult {
+    padding: 8px 10px;
+  }
+
+  .evalTitle {
+    display: none;
+  }
+
+  .playerCards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .playerCard {
+    min-height: 54px;
+    padding: 9px 12px;
+    border: 2px solid rgba(180, 130, 145, 0.45);
+  }
+
+  .playerStone {
+    width: 28px;
+    height: 28px;
+  }
+
+  .playerName {
+    font-size: 17px;
+  }
+
+  .playerCaptures {
+    font-size: 12px;
+  }
+
+  .evaluation {
+    display: grid;
+    grid-template-columns: minmax(92px, 0.75fr) minmax(0, 1.25fr);
+    align-items: stretch;
+    gap: 8px;
+    background: transparent;
+    border: 0;
+    padding: 0;
+  }
+
+  .evalLead {
+    min-height: 42px;
+    margin-bottom: 0;
+    border: 2px solid rgba(185, 130, 150, 0.42);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.58);
+  }
+
+  .winRateRow {
+    min-height: 42px;
+    grid-template-columns: minmax(64px, auto) minmax(42px, 1fr) auto auto;
+    padding: 7px 8px;
+    border: 2px solid rgba(185, 130, 150, 0.42);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.5);
+  }
+
+  .evalPercent {
+    font-size: 11px;
+  }
+
+  .evalDetails {
+    grid-column: 1 / -1;
+    padding-top: 2px;
+  }
+
+  .stats {
+    display: none;
+  }
+
+  .statItem {
+    min-width: 0;
+    padding: 6px 8px;
+  }
+
+  .statLabel {
+    font-size: 12px;
+  }
+
+  .buttons {
+    gap: 8px;
+  }
+
+  .primaryControls {
+    gap: 8px;
+  }
+
+  .btn {
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  .historyToggle {
+    min-height: 38px;
+    font-size: 13px;
+  }
+
+  .moreToggle {
+    display: none;
+    min-height: 36px;
+    font-size: 13px;
+  }
+
+  .advancedSection {
+    position: absolute;
+    z-index: 5;
+    left: 14px;
+    right: 14px;
+    top: calc(100% - 6px);
+    gap: 8px;
+    padding: 10px;
+    background: linear-gradient(135deg, #faf5ef, #f0e8df);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 12px;
+    box-shadow: 0 10px 28px rgba(80, 50, 30, 0.16);
+  }
+}
+.mobileToolButton:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+@media (max-width: 380px) {
+  .panel {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .buttons {
+    gap: 6px;
+  }
+
+  .btn {
+    min-height: 38px;
+    font-size: 13px;
+  }
+
+  .evalScores,
+  .scoreItem,
+  .countRow {
+    font-size: 12px;
+  }
+}

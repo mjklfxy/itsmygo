@@ -29,9 +29,7 @@ export function handleExitReview(state: GameState): GameState {
     ...state,
     mode: 'play',
     board: finalBoard,
-    currentPlayer: lastMove
-      ? lastMove.pass ? lastMove.player : (-lastMove.player) as Player
-      : 1,
+    currentPlayer: lastMove ? (-lastMove.player) as Player : 1,
     reviewIndex: -1,
     reviewFinalBoard: null,
     gameOver: state.savedGameOver,
