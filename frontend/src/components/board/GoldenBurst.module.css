@@ -1,0 +1,39 @@
+@keyframes burstFade {
+  0% { opacity: 0; transform: translate(0, 0); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)); }
+}
+
+@keyframes burstFadeSpin {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0deg); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(180deg); }
+}
+
+@keyframes ringExpand {
+  0% { opacity: 1; stroke-width: 4; }
+  100% { opacity: 0; stroke-width: 0; }
+}
+
+@keyframes ringInner {
+  0% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+.ring {
+  animation: ringExpand 0.5s ease-out forwards;
+}
+
+.ringInner {
+  animation: ringInner 0.35s ease-out forwards;
+}
+
+.particle {
+  animation: burstFade var(--dur) var(--delay) ease-out forwards;
+  opacity: 0;
+}
+
+.particleSpin {
+  animation: burstFadeSpin var(--dur) var(--delay) ease-out forwards;
+  opacity: 0;
+}
