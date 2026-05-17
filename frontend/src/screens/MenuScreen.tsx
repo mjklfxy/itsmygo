@@ -7,7 +7,7 @@ interface MenuScreenProps {
   onStartGame: (cfg: {
     size: number;
     komi: number;
-    aiMode: "none" | "black" | "white";
+    aiMode: "none" | "black" | "white" | "katago-black" | "katago-white";
     playerColor: 1 | -1;
   }) => void;
   onLoadRecord: (record: GameRecord) => void;
@@ -17,7 +17,7 @@ export default function MenuScreen({ onStartGame, onLoadRecord }: MenuScreenProp
   const [config, setConfig] = useState({
     size: 9,
     komi: 7.5,
-    aiMode: "none" as "none" | "black" | "white",
+    aiMode: "none" as "none" | "black" | "white" | "katago-black" | "katago-white",
     playerColor: 1 as 1 | -1,
   });
   const [showConfig, setShowConfig] = useState(false);
@@ -65,13 +65,23 @@ export default function MenuScreen({ onStartGame, onLoadRecord }: MenuScreenProp
             <span className={styles.menuBtnIcon}>☆</span>
             <span>AI对战</span>
           </button>
+          <button
+            className={styles.menuBtn}
+            onClick={() => {
+              setConfig((c) => ({ ...c, aiMode: "katago-white", playerColor: 1 }));
+              setShowConfig(true);
+            }}
+          >
+            <span className={styles.menuBtnIcon}>⚡</span>
+            <span>KataGo对战</span>
+          </button>
         </div>
       )}
 
       {showConfig && (
         <div className={styles.config}>
           <div className={styles.configTitle}>
-            {config.aiMode === "none" ? "新建对局" : "AI对战"}
+            {config.aiMode === "none" ? "新建对局" : config.aiMode.startsWith("katago") ? "KataGo对战" : "AI对战"}
           </div>
 
           {config.aiMode !== "none" && (

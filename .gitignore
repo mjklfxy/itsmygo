@@ -28,3 +28,6 @@ tests/
 .claude/
 .codex/
 .opencode/
+
+# KataGo binary (用户自行下载，不提交)
+backend/katago/

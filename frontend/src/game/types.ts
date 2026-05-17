@@ -51,5 +51,5 @@ export interface GameState {
   countingBlackScore: number
   countingWhiteScore: number
   komi: number
-  aiMode: 'none' | 'black' | 'white'
+  aiMode: 'none' | 'black' | 'white' | 'katago-black' | 'katago-white'
 }

@@ -5,7 +5,7 @@ import { GameContext } from './gameContextValue'
 export function GameProvider({ size, komi, aiMode, children }: {
   size: number
   komi: number
-  aiMode: 'none' | 'black' | 'white'
+  aiMode: 'none' | 'black' | 'white' | 'katago-black' | 'katago-white'
   children: React.ReactNode
 }) {
   const [state, dispatch] = useReducer(gameReducer, null, () =>

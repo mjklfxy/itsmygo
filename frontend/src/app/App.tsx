@@ -12,7 +12,7 @@ export default function App() {
   const [gameConfig, setGameConfig] = useState({
     size: 19,
     komi: 7.5,
-    aiMode: "none" as "none" | "black" | "white",
+    aiMode: "none" as "none" | "black" | "white" | "katago-black" | "katago-white",
   });
   const [gameKey, setGameKey] = useState(0);
   const [pendingRecord, setPendingRecord] = useState<GameRecord | null>(null);
@@ -21,15 +21,17 @@ export default function App() {
     (cfg: {
       size: number;
       komi: number;
-      aiMode: "none" | "black" | "white";
+      aiMode: "none" | "black" | "white" | "katago-black" | "katago-white";
       playerColor: 1 | -1;
     }) => {
-      const aiMode =
-        cfg.aiMode === "none"
-          ? ("none" as const)
-          : cfg.playerColor === 1
-            ? ("white" as const)
-            : ("black" as const);
+      let aiMode: "none" | "black" | "white" | "katago-black" | "katago-white"
+      if (cfg.aiMode === "none") {
+        aiMode = "none"
+      } else if (cfg.aiMode === "katago-black" || cfg.aiMode === "katago-white") {
+        aiMode = cfg.playerColor === 1 ? "katago-white" : "katago-black"
+      } else {
+        aiMode = cfg.playerColor === 1 ? "white" : "black"
+      }
       setGameConfig({ size: cfg.size, komi: cfg.komi, aiMode });
       setPendingRecord(null);
       setScreen("game");
