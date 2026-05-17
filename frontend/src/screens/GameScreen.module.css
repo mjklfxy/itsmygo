@@ -1,0 +1,96 @@
+.title {
+  display: none;
+}
+
+.gameArea {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  width: 100%;
+}
+
+.boardWrapper {
+  flex: 1;
+  max-width: min(calc(100vh - 100px), calc(100vw - 350px));
+  aspect-ratio: 1;
+  padding: 14px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.12) 50%, transparent 50%) 0 0 / 20px 20px,
+    linear-gradient(145deg, #ffe4bc, #f4cfa0 48%, #e8b98c);
+  border: 3px solid #fff6e5;
+  border-radius: 18px;
+  box-shadow:
+    0 10px 0 rgba(91, 64, 52, 0.11),
+    0 18px 34px rgba(87, 57, 44, 0.12),
+    inset 0 0 0 2px rgba(142, 90, 54, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.finalScore {
+  margin-top: 12px;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #8b6f5e;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 8px 20px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 720px) {
+  .title {
+    display: none;
+  }
+
+  .gameArea {
+    flex: 1;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: flex-start;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .boardWrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: min(100%, 430px);
+    max-width: none;
+    max-height: 100%;
+    padding: 7px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #ffe6bf, #efc891);
+    box-shadow:
+      0 6px 0 rgba(91, 64, 52, 0.1),
+      inset 0 0 0 2px rgba(142, 90, 54, 0.08);
+  }
+
+  .finalScore {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px 12px;
+    font-size: 13px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 380px) {
+  .title {
+    display: none;
+  }
+
+  .gameArea {
+    gap: 8px;
+  }
+
+  .boardWrapper {
+    padding: 6px;
+  }
+}

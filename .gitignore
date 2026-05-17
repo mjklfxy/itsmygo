@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+tests/
 *.local
 
 # Editor directories and files
@@ -25,4 +26,8 @@ dist-ssr
 
 # AI Assistant / Editor files
 .claude/
+.codex/
 .opencode/
+
+# KataGo binary (用户自行下载，不提交)
+backend/katago/
