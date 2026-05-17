@@ -10,7 +10,7 @@ export type GameAction =
   | { type: 'PASS' }
   | { type: 'RESIGN' }
   | { type: 'UNDO' }
-  | { type: 'RESET'; size: number; komi?: number; aiMode?: 'none' | 'black' | 'white' }
+  | { type: 'RESET'; size: number; komi?: number; aiMode?: 'none' | 'black' | 'white' | 'katago-black' | 'katago-white' }
   | { type: 'ENTER_REVIEW' }
   | { type: 'EXIT_REVIEW' }
   | { type: 'REVIEW_PREV' }
@@ -23,7 +23,7 @@ export type GameAction =
   | { type: 'CANCEL_COUNT' }
   | { type: 'LOAD_RECORD'; record: import('./types').GameRecord }
 
-export function createInitialState(size: number, komi: number = 7.5, aiMode: 'none' | 'black' | 'white' = 'none'): GameState {
+export function createInitialState(size: number, komi: number = 7.5, aiMode: 'none' | 'black' | 'white' | 'katago-black' | 'katago-white' = 'none'): GameState {
   return {
     size,
     board: createEmptyBoard(size),
