@@ -29,5 +29,8 @@ tests/
 .codex/
 .opencode/
 
+# Local visual-audit artefacts (screenshots, measurement scripts)
+.audit/
+
 # KataGo binary (用户自行下载，不提交)
 backend/katago/
