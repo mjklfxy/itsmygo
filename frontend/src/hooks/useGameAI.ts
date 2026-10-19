@@ -9,14 +9,20 @@ function isKatagoMode(mode: string): boolean {
   return mode === 'katago-black' || mode === 'katago-white'
 }
 
-/** Convert game move history to GTP format for KataGo */
+/**
+ * Convert game move history to GTP format for KataGo.
+ *
+ * Passes are preserved as the literal "pass". Dropping them would desynchronise the
+ * colour of every move after the pass, because GTP replays the sequence in order.
+ */
 function buildGtpMoves(state: GameState): [string, string][] {
-  return state.moves
-    .filter(m => !m.pass)
-    .map(m => [
-      m.player === 1 ? 'B' : 'W',
-      moveToGtp(m.x, m.y, state.size),
-    ] as [string, string])
+  return state.moves.map(
+    (m) =>
+      [
+        m.player === 1 ? 'B' : 'W',
+        m.pass ? 'pass' : moveToGtp(m.x, m.y, state.size),
+      ] as [string, string],
+  )
 }
 
 export function useGameAI(state: GameState, dispatch: React.Dispatch<GameAction>) {
@@ -55,9 +61,14 @@ export function useGameAI(state: GameState, dispatch: React.Dispatch<GameAction>
           }
         })
         .catch((err) => {
-          console.error('KataGo error:', err)
-          // Fallback: pass on error
-          dispatch({ type: 'PASS' })
+          // The backend may be down or the engine not started. Fall back to the
+          // local AI so the game stays playable instead of silently passing.
+          console.warn('KataGo unavailable, using local AI:', err)
+          const prevBoard =
+            s.history.length > 0 ? s.history[s.history.length - 1] : null
+          const move = selectMove(s.board, s.currentPlayer, prevBoard)
+          if (move) dispatch({ type: 'PLACE_STONE', x: move.x, y: move.y })
+          else dispatch({ type: 'PASS' })
         })
         .finally(() => {
           aiThinking.current = false

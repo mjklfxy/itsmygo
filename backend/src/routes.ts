@@ -1,4 +1,5 @@
 import type { KataGoManager, KataGoConfig } from './katago'
+import type { AnalysisEngine, AnalysisConfig } from './analysis'
 
 const ALLOWED_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173'
 
@@ -25,7 +26,11 @@ async function readBody(req: Request): Promise<Record<string, unknown>> {
   }
 }
 
-export async function handleRequest(req: Request, katago: KataGoManager): Promise<Response> {
+export async function handleRequest(
+  req: Request,
+  katago: KataGoManager,
+  analysis: AnalysisEngine,
+): Promise<Response> {
   // CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders() })
@@ -35,7 +40,11 @@ export async function handleRequest(req: Request, katago: KataGoManager): Promis
 
   // GET /api/health
   if (url.pathname === '/api/health' && req.method === 'GET') {
-    return json({ status: 'ok', katagoRunning: katago.isRunning() })
+    return json({
+      status: 'ok',
+      katagoRunning: katago.isRunning(),
+      analysisRunning: analysis.isRunning(),
+    })
   }
 
   // POST /api/katago/start
@@ -112,32 +121,60 @@ export async function handleRequest(req: Request, katago: KataGoManager): Promis
     }
   }
 
-  // POST /api/analyze — position analysis
+  // POST /api/analyze — real position analysis via the KataGo analysis engine
   if (url.pathname === '/api/analyze' && req.method === 'POST') {
-    if (!katago.isRunning()) {
-      return json({ success: false, error: 'KataGo is not running' }, 503)
+    if (!analysis.isRunning()) {
+      return json({ success: false, error: 'Analysis engine is not running' }, 503)
     }
     const body = await readBody(req)
-    const { boardSize, moves, komi } = body as {
+    const { boardSize, moves, komi, maxVisits } = body as {
       boardSize: number
       moves: [string, string][]
       komi: number
+      maxVisits?: number
+    }
+
+    if (!Array.isArray(moves) || typeof boardSize !== 'number') {
+      return json({ success: false, error: 'Missing boardSize or moves' }, 400)
     }
 
     try {
-      await katago.sendCommand('boardsize', [String(boardSize)])
-      await katago.sendCommand('clear_board', [])
-      await katago.sendCommand('komi', [String(komi)])
-
-      for (const [moveColor, coord] of moves) {
-        await katago.sendCommand('play', [moveColor, coord])
-      }
-
-      const result = await katago.sendCommand('final_score', [])
-      return json({ success: true, score: result.data })
+      const result = await analysis.analyze({
+        moves,
+        komi: typeof komi === 'number' ? komi : 7.5,
+        boardSize,
+        maxVisits,
+      })
+      return json({ success: true, ...result })
     } catch (e) {
       return json({ success: false, error: String(e) }, 500)
     }
+  }
+
+  // POST /api/analysis/start
+  if (url.pathname === '/api/analysis/start' && req.method === 'POST') {
+    const body = await readBody(req)
+    const config: AnalysisConfig = {
+      katagoPath: (body.katagoPath as string) || 'katago',
+      modelPath: (body.modelPath as string) || '',
+      configPath: (body.configPath as string) || '',
+      argv: Array.isArray(body.argv) ? (body.argv as string[]) : undefined,
+    }
+    try {
+      await analysis.start(config)
+      return json({ success: true })
+    } catch (e) {
+      return json(
+        { success: false, error: String(e), stderr: analysis.getStderrTail() },
+        500,
+      )
+    }
+  }
+
+  // POST /api/analysis/stop
+  if (url.pathname === '/api/analysis/stop' && req.method === 'POST') {
+    await analysis.stop()
+    return json({ success: true })
   }
 
   return json({ error: 'Not found' }, 404)

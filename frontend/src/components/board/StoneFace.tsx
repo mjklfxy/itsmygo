@@ -1,44 +1,75 @@
-import styles from './StoneFace.module.css'
-import { FACES, type Expression } from './stoneFaceExpressions'
+import type { Expression } from './stoneFaceExpressions'
 
-export function StoneFace({ expression, stoneColor, r }: { expression: Expression; stoneColor: number; r: number }) {
-  const isB = stoneColor === 1
-  const face = FACES[expression]
-  const col = isB ? 'rgba(255,255,255,0.92)' : 'rgba(40,40,50,0.85)'
-  const fontSize = expression === 'surprised' ? r * 0.52 : r * 0.58
+/**
+ * Draws the stone faces.
+ *
+ * Geometry scales with the stone radius, but every stroked feature uses
+ * `vector-effect: non-scaling-stroke` so its line weight is expressed in screen pixels.
+ * With stone-relative widths the mouth and brows collapsed to ~1px on a 19x19 board
+ * (stone radius ~16px) and the face read as a grey smudge.
+ */
+const STROKE_PX = 1.4
+
+/** Blush and pupils are filled, so they cannot use non-scaling-stroke; drop them when too small. */
+const DETAIL_MIN_RADIUS = 15
+
+export function StoneFace({
+  expression,
+  stoneColor,
+  r,
+}: {
+  expression: Expression
+  stoneColor: number
+  r: number
+}) {
+  const color = stoneColor === 1 ? '#f8f3df' : '#344541'
+  const worried = expression === 'worried' || expression === 'scared'
+  const showDetail = r >= DETAIL_MIN_RADIUS
+
+  const line = {
+    fill: 'none',
+    stroke: color,
+    strokeWidth: STROKE_PX,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+    vectorEffect: 'non-scaling-stroke' as const,
+  }
 
   return (
-    <g>
-      <text
-        x={0}
-        y={0}
-        fontSize={fontSize}
-        fill={col}
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontFamily="'Courier New', 'Consolas', monospace"
-        fontWeight="bold"
-        style={{ userSelect: 'none' }}
-      >
-        {face}
-      </text>
-      {expression === 'happy' && (
-        <>
-          <circle cx={-r * 0.38} cy={r * 0.18} r={r * 0.07}
-            fill={isB ? 'rgba(255,140,170,0.45)' : 'rgba(255,120,160,0.3)'} />
-          <circle cx={r * 0.38} cy={r * 0.18} r={r * 0.07}
-            fill={isB ? 'rgba(255,140,170,0.45)' : 'rgba(255,120,160,0.3)'} />
-        </>
+    <g transform={`scale(${r})`} pointerEvents="none">
+      {expression === 'happy' ? (
+        <path
+          d="M-.42 -.02 Q-.28 -.24 -.15 -.02 M.15 -.02 Q.28 -.24 .42 -.02"
+          {...line}
+        />
+      ) : worried ? (
+        <path d="M-.4 -.14 L-.2 -.03 L-.4 .03 M.4 -.14 L.2 -.03 L.4 .03" {...line} />
+      ) : (
+        <g fill={color} stroke="none">
+          <circle cx="-.27" cy="-.04" r={showDetail ? '.085' : '.11'} />
+          <circle cx=".27" cy="-.04" r={showDetail ? '.085' : '.11'} />
+        </g>
+      )}
+      {expression === 'surprised' ? (
+        <ellipse cx="0" cy=".2" rx=".075" ry=".105" {...line} />
+      ) : (
+        <path
+          d={worried ? 'M-.13 .24 Q0 .09 .13 .24' : 'M-.15 .14 Q0 .33 .15 .14'}
+          {...line}
+        />
+      )}
+      {showDetail && (
+        <g fill="#e99683" stroke="none" opacity={stoneColor === 1 ? '.6' : '.45'}>
+          <ellipse cx="-.45" cy=".17" rx=".1" ry=".05" />
+          <ellipse cx=".45" cy=".17" rx=".1" ry=".05" />
+        </g>
       )}
       {expression === 'scared' && (
-        <>
-          <ellipse cx={-r * 0.22} cy={r * 0.22} rx={r * 0.035} ry={r * 0.05}
-            fill="rgba(60,160,255,0.7)" className={styles.tear}
-            style={{ animationDelay: '0s' } as React.CSSProperties} />
-          <ellipse cx={r * 0.22} cy={r * 0.26} rx={r * 0.035} ry={r * 0.05}
-            fill="rgba(60,160,255,0.6)" className={styles.tear}
-            style={{ animationDelay: '0.3s' } as React.CSSProperties} />
-        </>
+        <path
+          d="M.52 -.18 Q.7 .03 .54 .07 Q.42 .06 .52 -.18"
+          fill="#85c8d3"
+          stroke="none"
+        />
       )}
     </g>
   )

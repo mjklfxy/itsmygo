@@ -1,96 +1,153 @@
-.title {
-  display: none;
+.header {
+  display: flex;
+  flex: 0 0 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
 }
-
+.brand {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+.brand span {
+  color: var(--accent);
+}
+.headerMeta {
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+}
+.back {
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  padding: 8px 16px;
+  color: var(--ink);
+  font-size: var(--text-sm);
+}
+.back:hover {
+  background: var(--paper);
+}
 .gameArea {
   flex: 1;
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  justify-content: center;
   min-height: 0;
-  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-rows: minmax(0, 1fr);
+  gap: clamp(16px, 3vw, 40px);
+  padding-top: 16px;
+  align-items: center;
 }
-
+.boardStage {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
+}
+.boardHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.boardHeading h1 {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+.boardHeading span {
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+}
+/* Size containment measures both available axes, keeping the board square without pushing controls offscreen. */
+.boardViewport {
+  min-width: 0;
+  min-height: 0;
+  container-type: size;
+  display: grid;
+  place-items: center;
+  padding: 0 5px 10px;
+}
 .boardWrapper {
-  flex: 1;
-  max-width: min(calc(100vh - 100px), calc(100vw - 350px));
+  width: min(100cqw, 100cqh, 760px);
   aspect-ratio: 1;
-  padding: 14px;
-  background:
-    linear-gradient(90deg, rgba(255,255,255,0.12) 50%, transparent 50%) 0 0 / 20px 20px,
-    linear-gradient(145deg, #ffe4bc, #f4cfa0 48%, #e8b98c);
-  border: 3px solid #fff6e5;
-  border-radius: 18px;
+  padding: clamp(5px, 1.5cqw, 12px);
+  border-radius: 12px;
+  border: 1px solid #b88b51;
+  background: linear-gradient(120deg, #d6ad73, #ebc58b 45%, #c79b62);
   box-shadow:
-    0 10px 0 rgba(91, 64, 52, 0.11),
-    0 18px 34px rgba(87, 57, 44, 0.12),
-    inset 0 0 0 2px rgba(142, 90, 54, 0.1);
+    0 5px 0 #ac8050,
+    0 7px 0 #9e764a,
+    0 15px 24px -16px #60462d55,
+    inset 0 1px 1px #fff4cf;
+}
+.boardFoot {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 0;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
 }
-
-.finalScore {
-  margin-top: 12px;
-  font-family: 'Nunito', 'Segoe UI', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  color: #8b6f5e;
-  background: rgba(255, 255, 255, 0.6);
-  padding: 8px 20px;
-  border-radius: 10px;
-  flex-shrink: 0;
+.boardFoot span:last-child {
+  color: var(--accent);
 }
-
-@media (max-width: 720px) {
-  .title {
+@media (max-width: 900px) and (orientation: portrait) {
+  .headerMeta {
     display: none;
   }
-
   .gameArea {
-    flex: 1;
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
     gap: 10px;
-    justify-content: flex-start;
-    min-height: 0;
-    overflow: hidden;
+    padding-top: 10px;
   }
-
-  .boardWrapper {
-    flex: 1 1 auto;
-    min-height: 0;
-    width: min(100%, 430px);
-    max-width: none;
-    max-height: 100%;
-    padding: 7px;
-    border-radius: 12px;
-    background: linear-gradient(145deg, #ffe6bf, #efc891);
-    box-shadow:
-      0 6px 0 rgba(91, 64, 52, 0.1),
-      inset 0 0 0 2px rgba(142, 90, 54, 0.08);
+  .boardStage {
+    gap: 6px;
   }
-
-  .finalScore {
-    width: 100%;
-    margin-top: 10px;
-    padding: 8px 12px;
-    font-size: 13px;
-    text-align: center;
+  .boardHeading h1 {
+    font-size: var(--text-sm);
+  }
+  .boardHeading span {
+    font-size: var(--text-xs);
+  }
+  .boardFoot {
+    font-size: var(--text-xs);
   }
 }
-
-@media (max-width: 380px) {
-  .title {
+@media (max-height: 700px) {
+  .boardFoot {
     display: none;
   }
-
-  .gameArea {
-    gap: 8px;
+  .boardStage {
+    grid-template-rows: auto minmax(0, 1fr);
   }
-
-  .boardWrapper {
-    padding: 6px;
+}
+/* A landscape phone uses the same board-left/control-right arrangement as a desktop. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .header {
+    flex-basis: 40px;
+  }
+  .headerMeta {
+    display: none;
+  }
+  .back {
+    min-height: 34px;
+    padding: 5px 12px;
+    font-size: var(--text-xs);
+  }
+  .gameArea {
+    grid-template-columns: minmax(0, 1fr) clamp(240px, 40vw, 300px);
+    gap: 12px;
+    padding-top: 8px;
+  }
+  .boardStage {
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .boardHeading {
+    display: none;
   }
 }
